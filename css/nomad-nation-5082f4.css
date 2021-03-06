@@ -1,0 +1,409 @@
+body {
+  font-family: Inter, sans-serif;
+  color: #333;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+h1 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-family: futura-pt, sans-serif;
+  font-size: 38px;
+  line-height: 44px;
+  font-weight: 600;
+}
+
+h2 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-family: futura-pt, sans-serif;
+  color: #009192;
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 600;
+}
+
+h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-family: futura-pt, sans-serif;
+  color: #444;
+  font-size: 21px;
+  line-height: 30px;
+  font-weight: 600;
+}
+
+p {
+  margin-bottom: 10px;
+  font-family: Inter, sans-serif;
+  color: #444;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+a {
+  color: #ff4e00;
+  text-decoration: none;
+}
+
+.navbar {
+  margin-bottom: 60px;
+  padding-top: 20px;
+  padding-bottom: 30px;
+  background-color: transparent;
+}
+
+.logo {
+  width: 300px;
+  margin-top: 10px;
+}
+
+.navlink {
+  font-family: futura-pt, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.navlink.w--current {
+  color: #ff4e00;
+}
+
+.title-orange {
+  font-family: futura-pt, sans-serif;
+  color: #ff4e00;
+  font-size: 38px;
+  line-height: 42px;
+  font-weight: 600;
+}
+
+.title-orange.mb-60 {
+  margin-bottom: 60px;
+}
+
+.section-hero {
+  padding-top: 0px;
+  padding-bottom: 140px;
+  background-image: url('../images/bg-top.svg');
+  background-position: 50% 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.subtitle {
+  margin-top: 20px;
+  margin-bottom: 40px;
+  font-family: futura-pt, sans-serif;
+  font-size: 21px;
+  line-height: 28px;
+}
+
+.button {
+  margin-bottom: 20px;
+  padding: 10px 25px;
+  border-radius: 20px;
+  background-color: #ff4e00;
+  font-family: futura-pt, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.heading {
+  font-size: 28px;
+}
+
+.heading-2 {
+  color: #009192;
+  line-height: 32px;
+}
+
+.paragraph {
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.paragraph.mt-100 {
+  margin-top: 100px;
+}
+
+.section-cta {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  text-align: center;
+}
+
+.paragraph-2 {
+  line-height: 24px;
+}
+
+.title {
+  font-family: futura-pt, sans-serif;
+  color: #009192;
+  font-size: 38px;
+  line-height: 42px;
+  font-weight: 600;
+}
+
+.usecase {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  margin-top: 20px;
+  margin-right: 40px;
+  margin-bottom: 20px;
+}
+
+.usecase-right {
+  padding-left: 20px;
+}
+
+.usecase-left {
+  width: 350px;
+  padding-top: 20px;
+}
+
+.section-plans {
+  padding-top: 60px;
+  padding-bottom: 100px;
+}
+
+.plan {
+  border-style: none;
+  border-width: 3px;
+  border-color: #fff;
+  box-shadow: 1px 1px 20px 0 rgba(0, 0, 0, 0.15);
+}
+
+.plan.plan-recommended {
+  border-style: solid;
+  border-width: 3px;
+  border-color: #009192;
+}
+
+.plan_head {
+  min-height: 90px;
+  padding: 10px 15px;
+  border-bottom: 3px solid rgba(0, 0, 0, 0.05);
+  border-radius: 0px;
+}
+
+.plan_section {
+  padding: 20px 15px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.plan_section.plan_section-last {
+  border-bottom-style: none;
+}
+
+.plan_section.plan_section-190 {
+  min-height: 190px;
+}
+
+.plan_section.plan_section-170 {
+  min-height: 170px;
+}
+
+.plan_type {
+  padding-bottom: 10px;
+}
+
+.plan_text {
+  margin-top: 0px;
+  margin-bottom: 5px;
+  font-weight: 400;
+}
+
+.procon_pro {
+  padding-top: 0px;
+  padding-bottom: 10px;
+  padding-left: 30px;
+  background-image: url('../images/pro.svg');
+  background-position: 0px 0px;
+  background-size: auto;
+  background-repeat: no-repeat;
+  background-clip: border-box;
+}
+
+.procon_con {
+  padding-top: 0px;
+  padding-bottom: 10px;
+  padding-left: 30px;
+  background-image: url('../images/con.svg');
+  background-position: 0px 0px;
+  background-size: auto;
+  background-repeat: no-repeat;
+  background-clip: border-box;
+}
+
+.plan_price {
+  margin-top: 0px;
+  margin-bottom: 5px;
+  font-family: futura-pt, sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.plan_unit {
+  font-family: Inter, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.plan_body {
+  border-style: solid;
+  border-width: 3px;
+  border-color: #fff;
+}
+
+.plan_body.recommended {
+  border-style: solid;
+  border-width: 3px;
+  border-color: #009192;
+}
+
+.div-block {
+  display: -ms-grid;
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-column-gap: 16px;
+  grid-row-gap: 16px;
+  -ms-grid-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  -ms-grid-rows: auto auto;
+  grid-template-rows: auto auto;
+}
+
+.image.image-center {
+  text-align: center;
+}
+
+.image.image-right {
+  text-align: right;
+}
+
+.image.image-right.image-paddingtop {
+  margin-top: 20px;
+}
+
+.image-2 {
+  max-width: 90%;
+}
+
+.column.column-padded {
+  padding-right: 10px;
+  padding-bottom: 10px;
+}
+
+.select {
+  border: 1px none #000;
+  background-color: #fff;
+  box-shadow: 1px 1px 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.label {
+  font-weight: 400;
+}
+
+.link.link-large {
+  font-size: 18px;
+}
+
+.link.link-largefutura {
+  font-family: futura-pt, sans-serif;
+  font-size: 21px;
+}
+
+.section-home {
+  padding-top: 100px;
+  padding-bottom: 220px;
+  background-image: url('../images/bg-top.svg');
+  background-position: 50% 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.text-bold {
+  font-weight: 600;
+}
+
+.logo-large {
+  margin-bottom: 40px;
+}
+
+.embassy {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  min-height: 200px;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  background-image: url('../images/country-bulgaria.svg');
+  background-position: 0px 0px;
+  background-size: contain;
+}
+
+.embassy.embassy-germany {
+  background-image: url('../images/country-germany.svg');
+}
+
+.embassy.embassy-japan {
+  background-image: url('../images/country-japan.svg');
+}
+
+.embassy.embassy-thailand {
+  background-image: url('../images/country-thailand.svg');
+}
+
+.embassy_country {
+  font-family: futura-pt, sans-serif;
+  font-size: 48px;
+  font-weight: 600;
+}
+
+.getnotified {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.section-embassies {
+  padding-bottom: 60px;
+}
+
+@media screen and (max-width: 767px) {
+  .image.image-right.image-paddingtop {
+    display: none;
+    overflow: visible;
+    margin-top: 40px;
+  }
+
+  .link.link-large {
+    font-size: 18px;
+  }
+
+  .link.link-largefutura {
+    font-size: 18px;
+  }
+
+  .link-copy.link-large {
+    font-size: 18px;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .plan {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+}
+
