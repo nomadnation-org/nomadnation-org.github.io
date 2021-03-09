@@ -10,12 +10,14 @@ Für alle Select Boxes gibt es nur einen Event Handler.
 
 Beim project werden alle Pläne auf "plan_body" gesetzt und nur einer auch noch auf "recommended".
 */
-function onCitizenshipChanged(sel) {
+function onCitizenshipChanged(sel:HTMLSelectElement) {
     // <div id="plan-tourist" class="plan_body"> -> <div id="plan-tourist" class="plan_body recommended">
-    var planTourist = document.getElementById("plan-tourist");
-    var planResident = document.getElementById("plan-resident");
-    var option = sel.options[sel.selectedIndex].value;
-    if (option == "eu-citizen-true") {
+    let planTourist = document.getElementById("plan-tourist");
+    let planResident = document.getElementById("plan-resident");
+
+    let option = sel.options[sel.selectedIndex].value;
+    if (option == "eu-citizen-true")
+    {
         planTourist.className = "plan_body recommended";
         planResident.className = "plan_body";
     }
@@ -24,5 +26,6 @@ function onCitizenshipChanged(sel) {
         planResident.className = "plan_body recommended";
     }
 }
-var selectBox = document.getElementById("citizenship");
-selectBox.addEventListener("change", function () { onCitizenshipChanged(selectBox); });
+
+var selectBox = document.getElementById("citizenship") as HTMLSelectElement;
+selectBox.addEventListener("change", function() { onCitizenshipChanged(selectBox); });
