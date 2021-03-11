@@ -1,16 +1,74 @@
-var MembershipPlans;
-(function (MembershipPlans) {
-    MembershipPlans[MembershipPlans["None"] = 0] = "None";
-    MembershipPlans[MembershipPlans["Visitor"] = 1] = "Visitor";
-    MembershipPlans[MembershipPlans["Tourist"] = 2] = "Tourist";
-    MembershipPlans[MembershipPlans["Resident"] = 3] = "Resident";
-    MembershipPlans[MembershipPlans["Expat_Free"] = 4] = "Expat_Free";
-    MembershipPlans[MembershipPlans["Expat_LLC"] = 5] = "Expat_LLC";
-})(MembershipPlans || (MembershipPlans = {}));
+function onInteraction(view) {
+    var model = view.ViewModel;
+    model.RecommendPlan = MembershipPlansOptions.Tourist;
+    if ((model.EUCitizen && model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident) ||
+        model.BGResidency == BGResidencyOptions.IsBGResident) {
+        /*
+            Für EU citizens ist eine BG residency ein no-brainer. Alle Pläne sind möglich.
+            Und wer als non-EU citizen doch schon eine BG residency hat, der kann auch alle Pläne nutzen.
+         */
+        var llcRequired = model.Contractors || model.Employees || model.Inventory || model.LimitedLiability ||
+            model.AverageRevenue == AverageRevenueOptions.high;
+        var llcSuggested = model.AverageRevenue == AverageRevenueOptions.medium &&
+            model.AverageExpenses == AverageExpensesOptions.high;
+        if (llcRequired || llcSuggested)
+            model.RecommendPlan = MembershipPlansOptions.Expat_LLC;
+        else {
+            model.RecommendPlan = MembershipPlansOptions.Expat_Free;
+        }
+    }
+    else {
+        /*
+            Wer als non-EU citizen ohne BG residency eine BG residency bekommen will,
+            der kann das über den Resident Plan versuchen.
+            Ansonsten bleibt nur der Tourist für non-EU citizens.
+         */
+        if (model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident)
+            model.RecommendPlan = MembershipPlansOptions.Resident;
+        else
+            model.RecommendPlan = MembershipPlansOptions.Tourist;
+    }
+    view.Update(model);
+}
+var MembershipPlansOptions;
+(function (MembershipPlansOptions) {
+    MembershipPlansOptions[MembershipPlansOptions["None"] = 0] = "None";
+    MembershipPlansOptions[MembershipPlansOptions["Visitor"] = 1] = "Visitor";
+    MembershipPlansOptions[MembershipPlansOptions["Tourist"] = 2] = "Tourist";
+    MembershipPlansOptions[MembershipPlansOptions["Resident"] = 3] = "Resident";
+    MembershipPlansOptions[MembershipPlansOptions["Expat_Free"] = 4] = "Expat_Free";
+    MembershipPlansOptions[MembershipPlansOptions["Expat_LLC"] = 5] = "Expat_LLC";
+})(MembershipPlansOptions || (MembershipPlansOptions = {}));
+var BGResidencyOptions;
+(function (BGResidencyOptions) {
+    BGResidencyOptions[BGResidencyOptions["IsBGResident"] = 0] = "IsBGResident";
+    BGResidencyOptions[BGResidencyOptions["WantsToBecomeBGResident"] = 1] = "WantsToBecomeBGResident";
+    BGResidencyOptions[BGResidencyOptions["UnsureIfBGResidencyWanted"] = 2] = "UnsureIfBGResidencyWanted";
+    BGResidencyOptions[BGResidencyOptions["DoesNotWantToBecomeBGResident"] = 3] = "DoesNotWantToBecomeBGResident";
+})(BGResidencyOptions || (BGResidencyOptions = {}));
+var AverageRevenueOptions;
+(function (AverageRevenueOptions) {
+    AverageRevenueOptions[AverageRevenueOptions["low"] = 0] = "low";
+    AverageRevenueOptions[AverageRevenueOptions["medium"] = 1] = "medium";
+    AverageRevenueOptions[AverageRevenueOptions["high"] = 2] = "high";
+})(AverageRevenueOptions || (AverageRevenueOptions = {}));
+var AverageExpensesOptions;
+(function (AverageExpensesOptions) {
+    AverageExpensesOptions[AverageExpensesOptions["negligible"] = 0] = "negligible";
+    AverageExpensesOptions[AverageExpensesOptions["medium"] = 1] = "medium";
+    AverageExpensesOptions[AverageExpensesOptions["high"] = 2] = "high";
+})(AverageExpensesOptions || (AverageExpensesOptions = {}));
 var Model = /** @class */ (function () {
     function Model() {
         this.EUCitizen = false;
-        this.RecommendPlan = MembershipPlans.None;
+        this.BGResidency = BGResidencyOptions.WantsToBecomeBGResident;
+        this.Contractors = false;
+        this.Employees = false;
+        this.Inventory = false;
+        this.LimitedLiability = false;
+        this.AverageRevenue = AverageRevenueOptions.low;
+        this.AverageExpenses = AverageExpensesOptions.negligible;
+        this.RecommendPlan = MembershipPlansOptions.None;
     }
     return Model;
 }());
@@ -36,24 +94,24 @@ var ViewPlan = /** @class */ (function () {
 }());
 var ViewPlans = /** @class */ (function () {
     function ViewPlans(initialRecommendedPlan) {
-        this.plans = new Array();
-        this.plans[MembershipPlans.None] = new ViewPlan("none");
-        this.plans[MembershipPlans.Visitor] = new ViewPlan("visitor");
-        this.plans[MembershipPlans.Tourist] = new ViewPlan("tourist");
-        this.plans[MembershipPlans.Resident] = new ViewPlan("resident");
-        this.plans[MembershipPlans.Expat_Free] = new ViewPlan("expat-free");
-        this.plans[MembershipPlans.Expat_LLC] = new ViewPlan("expat-llc");
+        this.plans = [];
+        this.plans[MembershipPlansOptions.None] = new ViewPlan("none");
+        this.plans[MembershipPlansOptions.Visitor] = new ViewPlan("visitor");
+        this.plans[MembershipPlansOptions.Tourist] = new ViewPlan("tourist");
+        this.plans[MembershipPlansOptions.Resident] = new ViewPlan("resident");
+        this.plans[MembershipPlansOptions.Expat_Free] = new ViewPlan("expat-free");
+        this.plans[MembershipPlansOptions.Expat_LLC] = new ViewPlan("expat-llc");
         this.Update(initialRecommendedPlan);
     }
     ViewPlans.prototype.Update = function (recommendedPlan) {
         var _this = this;
         [
-            MembershipPlans.None,
-            MembershipPlans.Visitor,
-            MembershipPlans.Tourist,
-            MembershipPlans.Resident,
-            MembershipPlans.Expat_Free,
-            MembershipPlans.Expat_LLC
+            MembershipPlansOptions.None,
+            MembershipPlansOptions.Visitor,
+            MembershipPlansOptions.Tourist,
+            MembershipPlansOptions.Resident,
+            MembershipPlansOptions.Expat_Free,
+            MembershipPlansOptions.Expat_LLC
         ].forEach(function (plan) {
             _this.plans[plan].Recommend = false;
         });
@@ -64,32 +122,104 @@ var ViewPlans = /** @class */ (function () {
 var View = /** @class */ (function () {
     function View() {
         var _this = this;
-        this.eu_citizen_yes = document.getElementById("yes");
-        this.eu_citizen_yes.onclick = function () { return _this.OnChanged(_this); };
-        this.eu_citizen_no = document.getElementById("no");
-        this.eu_citizen_no.onclick = function () { return _this.OnChanged(_this); };
-        this.plans = new ViewPlans(MembershipPlans.None);
+        this.BG_RESIDENCY_OPTIONS = ["bg-have", "bg-yes", "bg-maybe", "bg-no"];
+        this.AVERAGE_REVENUE_OPTIONS = ["revenue-low", "revenue-medium", "revenue-high"];
+        this.AVERAGE_EXPENSES_OPTIONS = ["expenses-negligible", "expenses-medium", "expenses-medium"];
+        this.rb_EUCitizen_yes = document.getElementById("yes");
+        this.rb_EUCitizen_yes.onclick = function () { return _this.OnChanged(_this); };
+        this.rb_EUCitizen_no = document.getElementById("no");
+        this.rb_EUCitizen_no.onclick = function () { return _this.OnChanged(_this); };
+        this.sb_BGResidency = document.getElementById("residency");
+        this.sb_BGResidency.onchange = function () { return _this.OnChanged(_this); };
+        this.cb_contractors = document.getElementById("contractors");
+        this.cb_contractors.onclick = function () { return _this.OnChanged(_this); };
+        this.cb_employees = document.getElementById("employees");
+        this.cb_employees.onclick = function () { return _this.OnChanged(_this); };
+        this.cb_inventory = document.getElementById("inventory");
+        this.cb_inventory.onclick = function () { return _this.OnChanged(_this); };
+        this.cb_limitedLiability = document.getElementById("liability");
+        this.cb_limitedLiability.onclick = function () { return _this.OnChanged(_this); };
+        this.sb_AverageRevenue = document.getElementById("revenue-2");
+        this.sb_AverageRevenue.onchange = function () { return _this.OnChanged(_this); };
+        this.sb_AverageExpenses = document.getElementById("expenses-2");
+        this.sb_AverageExpenses.onchange = function () { return _this.OnChanged(_this); };
+        this.plans = new ViewPlans(MembershipPlansOptions.None);
     }
     Object.defineProperty(View.prototype, "ViewModel", {
         get: function () {
             var vm = new Model();
-            vm.EUCitizen = this.eu_citizen_yes.checked;
+            vm.EUCitizen = this.rb_EUCitizen_yes.checked;
+            vm.BGResidency = this.BGResidency;
+            vm.Contractors = this.cb_contractors.checked;
+            vm.Employees = this.cb_employees.checked;
+            vm.Inventory = this.cb_inventory.checked;
+            vm.LimitedLiability = this.cb_limitedLiability.checked;
+            vm.AverageRevenue = this.AverageRevenue;
+            vm.AverageExpenses = this.AverageExpenses;
             return vm;
         },
         enumerable: false,
         configurable: true
     });
     View.prototype.Update = function (vm) {
-        this.eu_citizen_yes.checked = vm.EUCitizen;
-        this.eu_citizen_no.checked = !this.eu_citizen_yes.checked;
+        this.rb_EUCitizen_yes.checked = vm.EUCitizen;
+        this.rb_EUCitizen_no.checked = !this.rb_EUCitizen_yes.checked;
+        this.BGResidency = vm.BGResidency;
+        this.cb_contractors.checked = vm.Contractors;
+        this.cb_employees.checked = vm.Employees;
+        this.cb_inventory.checked = vm.Inventory;
+        this.cb_limitedLiability.checked = vm.LimitedLiability;
+        this.AverageRevenue = vm.AverageRevenue;
+        this.AverageExpenses = vm.AverageExpenses;
         this.plans.Update(vm.RecommendPlan);
     };
+    Object.defineProperty(View.prototype, "BGResidency", {
+        get: function () {
+            switch (this.sb_BGResidency.value) {
+                case this.BG_RESIDENCY_OPTIONS[0]: return BGResidencyOptions.IsBGResident;
+                case this.BG_RESIDENCY_OPTIONS[1]: return BGResidencyOptions.WantsToBecomeBGResident;
+                case this.BG_RESIDENCY_OPTIONS[2]: return BGResidencyOptions.UnsureIfBGResidencyWanted;
+                case this.BG_RESIDENCY_OPTIONS[3]: return BGResidencyOptions.DoesNotWantToBecomeBGResident;
+                default: return BGResidencyOptions.WantsToBecomeBGResident;
+            }
+        },
+        set: function (value) {
+            this.sb_BGResidency.value = this.BG_RESIDENCY_OPTIONS[value];
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "AverageRevenue", {
+        get: function () {
+            switch (this.sb_AverageRevenue.value) {
+                case this.AVERAGE_REVENUE_OPTIONS[0]: return AverageRevenueOptions.low;
+                case this.AVERAGE_REVENUE_OPTIONS[1]: return AverageRevenueOptions.medium;
+                case this.AVERAGE_REVENUE_OPTIONS[2]: return AverageRevenueOptions.high;
+                default: return AverageRevenueOptions.low;
+            }
+        },
+        set: function (value) {
+            this.sb_AverageRevenue.value = this.AVERAGE_REVENUE_OPTIONS[value];
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(View.prototype, "AverageExpenses", {
+        get: function () {
+            switch (this.sb_AverageExpenses.value) {
+                case this.AVERAGE_EXPENSES_OPTIONS[0]: return AverageExpensesOptions.negligible;
+                case this.AVERAGE_EXPENSES_OPTIONS[1]: return AverageExpensesOptions.medium;
+                case this.AVERAGE_EXPENSES_OPTIONS[2]: return AverageExpensesOptions.high;
+                default: return AverageExpensesOptions.negligible;
+            }
+        },
+        set: function (value) {
+            this.sb_AverageExpenses.value = this.AVERAGE_EXPENSES_OPTIONS[value];
+        },
+        enumerable: false,
+        configurable: true
+    });
     return View;
 }());
-function onInteraction(view) {
-    var model = view.ViewModel;
-    model.RecommendPlan = model.EUCitizen ? MembershipPlans.Expat_Free : MembershipPlans.Resident;
-    view.Update(model);
-}
 var _view = new View();
 _view.OnChanged = onInteraction;
