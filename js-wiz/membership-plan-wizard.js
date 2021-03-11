@@ -1,7 +1,7 @@
 function onInteraction(view) {
     var model = view.ViewModel;
     model.RecommendPlan = MembershipPlansOptions.Tourist;
-    if ((model.EUCitizen && model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident) ||
+    if ((model.EUCitizen && (model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident || model.BGResidency == BGResidencyOptions.UnsureIfBGResidencyWanted)) ||
         model.BGResidency == BGResidencyOptions.IsBGResident) {
         /*
             Für EU citizens ist eine BG residency ein no-brainer. Alle Pläne sind möglich.
@@ -11,10 +11,31 @@ function onInteraction(view) {
             model.AverageRevenue == AverageRevenueOptions.high;
         var llcSuggested = model.AverageRevenue == AverageRevenueOptions.medium &&
             model.AverageExpenses == AverageExpensesOptions.high;
-        if (llcRequired || llcSuggested)
+        if (llcRequired || llcSuggested) {
+            /*
+                Notwendig ist eine EOOD, wenn ein Business viel Umsatz macht oder Abhängigkeiten aufweist.
+                Oder eine EOOD ist naheliegend, wenn die Ausgaben hoch im Verhältnis zu den Einnahmen sind.
+             */
             model.RecommendPlan = MembershipPlansOptions.Expat_LLC;
+        }
         else {
-            model.RecommendPlan = MembershipPlansOptions.Expat_Free;
+            /*
+                Self-Employment ist eigentlich der Plan, den NN allen empfehlen möchte. Damit bleibt
+                ein Solopreneur wirklich unabhängig und es entsteht kein bürokratischer Aufwand.
+             */
+            if ( //TODO: diplom checken && ...
+            (model.AverageExpenses == AverageExpensesOptions.negligible || model.AverageExpenses == AverageExpensesOptions.medium)) {
+                model.RecommendPlan = MembershipPlansOptions.Resident;
+            }
+            else {
+                if ((model.AverageRevenue == AverageRevenueOptions.low && model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident) ||
+                    model.BGResidency == BGResidencyOptions.UnsureIfBGResidencyWanted) {
+                    model.RecommendPlan = MembershipPlansOptions.Tourist;
+                }
+                else {
+                    model.RecommendPlan = MembershipPlansOptions.Expat_Free;
+                }
+            }
         }
     }
     else {
@@ -77,11 +98,9 @@ var ViewPlan = /** @class */ (function () {
         this.kind = kind;
         this.preview = document.getElementById("planpreview-" + kind);
         this.overview = document.getElementById("plan-" + kind);
-        console.log("viewplan ctor: " + kind + "/" + this.preview + "/" + this.overview);
     }
     Object.defineProperty(ViewPlan.prototype, "Recommend", {
         set: function (value) {
-            console.log("viewplan recommend: " + this.kind + "=" + value);
             if (this.preview != null)
                 this.preview.className = "planpreview_body" + (value ? " show" : "");
             if (this.overview != null)
@@ -124,7 +143,7 @@ var View = /** @class */ (function () {
         var _this = this;
         this.BG_RESIDENCY_OPTIONS = ["bg-have", "bg-yes", "bg-maybe", "bg-no"];
         this.AVERAGE_REVENUE_OPTIONS = ["revenue-low", "revenue-medium", "revenue-high"];
-        this.AVERAGE_EXPENSES_OPTIONS = ["expenses-negligible", "expenses-medium", "expenses-medium"];
+        this.AVERAGE_EXPENSES_OPTIONS = ["expense-negligible", "expense-medium", "expenses-high"];
         this.rb_EUCitizen_yes = document.getElementById("yes");
         this.rb_EUCitizen_yes.onclick = function () { return _this.OnChanged(_this); };
         this.rb_EUCitizen_no = document.getElementById("no");
@@ -223,3 +242,4 @@ var View = /** @class */ (function () {
 }());
 var _view = new View();
 _view.OnChanged = onInteraction;
+// _view.Update(new Model());

@@ -2,7 +2,7 @@ function onInteraction(view:View) {
     let model = view.ViewModel;
     model.RecommendPlan = MembershipPlansOptions.Tourist;
 
-    if ((model.EUCitizen && model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident) ||
+    if ((model.EUCitizen && (model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident || model.BGResidency == BGResidencyOptions.UnsureIfBGResidencyWanted)) ||
         model.BGResidency == BGResidencyOptions.IsBGResident) {
         /*
             Für EU citizens ist eine BG residency ein no-brainer. Alle Pläne sind möglich.
@@ -21,14 +21,25 @@ function onInteraction(view:View) {
             model.RecommendPlan = MembershipPlansOptions.Expat_LLC;
         }
         else {
-            //TODO: die average expenses werden nicht korrekt gesetzt und berücksichtigt
-
-
             /*
                 Self-Employment ist eigentlich der Plan, den NN allen empfehlen möchte. Damit bleibt
                 ein Solopreneur wirklich unabhängig und es entsteht kein bürokratischer Aufwand.
              */
-            model.RecommendPlan = MembershipPlansOptions.Expat_Free;
+            if (//TODO: diplom checken && ...
+                (model.AverageExpenses == AverageExpensesOptions.negligible || model.AverageExpenses == AverageExpensesOptions.medium)) {
+                model.RecommendPlan = MembershipPlansOptions.Resident;
+            }
+            else {
+                if ((model.AverageRevenue == AverageRevenueOptions.low && model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident) ||
+                    model.BGResidency == BGResidencyOptions.UnsureIfBGResidencyWanted)
+                {
+                    model.RecommendPlan = MembershipPlansOptions.Tourist;
+                }
+                else
+                {
+                    model.RecommendPlan = MembershipPlansOptions.Expat_Free;
+                }
+            }
         }
     }
     else {
@@ -93,6 +104,8 @@ class Model {
 }
 
 
+
+
 class ViewPlan {
     preview:HTMLElement;
     overview:HTMLElement;
@@ -104,13 +117,9 @@ class ViewPlan {
 
         this.preview = document.getElementById("planpreview-" + kind);
         this.overview = document.getElementById("plan-" + kind);
-
-        console.log("viewplan ctor: " + kind + "/" + this.preview + "/" + this.overview);
     }
 
     public set Recommend(value:boolean) {
-        console.log("viewplan recommend: " + this.kind + "=" + value);
-
         if (this.preview != null) this.preview.className = "planpreview_body" + (value ? " show" : "");
         if (this.overview != null) this.overview.className = "plan_body" + (value ? " recommended" : "");
     }
@@ -202,11 +211,14 @@ class View {
         let vm = new Model();
 
         vm.EUCitizen = this.rb_EUCitizen_yes.checked;
+
         vm.BGResidency = this.BGResidency;
+
         vm.Contractors = this.cb_contractors.checked;
         vm.Employees = this.cb_employees.checked;
         vm.Inventory = this.cb_inventory.checked;
         vm.LimitedLiability = this.cb_limitedLiability.checked;
+
         vm.AverageRevenue = this.AverageRevenue;
         vm.AverageExpenses = this.AverageExpenses;
 
@@ -260,7 +272,7 @@ class View {
     }
 
 
-    AVERAGE_EXPENSES_OPTIONS = ["expenses-negligible", "expenses-medium", "expenses-medium"];
+    AVERAGE_EXPENSES_OPTIONS = ["expense-negligible", "expense-medium", "expenses-high"];
     get AverageExpenses() : AverageExpensesOptions {
         switch(this.sb_AverageExpenses.value) {
             case this.AVERAGE_EXPENSES_OPTIONS[0]: return AverageExpensesOptions.negligible;
@@ -281,4 +293,4 @@ class View {
 let _view = new View();
 _view.OnChanged = onInteraction;
 
-
+// _view.Update(new Model());
