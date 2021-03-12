@@ -25,8 +25,7 @@ function onInteraction(view:View) {
                 Self-Employment ist eigentlich der Plan, den NN allen empfehlen möchte. Damit bleibt
                 ein Solopreneur wirklich unabhängig und es entsteht kein bürokratischer Aufwand.
              */
-            if (//TODO: diplom checken && ...
-                (model.AverageExpenses == AverageExpensesOptions.negligible || model.AverageExpenses == AverageExpensesOptions.medium)) {
+            if (model.Diploma && (model.AverageExpenses == AverageExpensesOptions.negligible || model.AverageExpenses == AverageExpensesOptions.medium)) {
                 model.RecommendPlan = MembershipPlansOptions.Resident;
             }
             else {
@@ -48,7 +47,7 @@ function onInteraction(view:View) {
             der kann das über den Resident Plan versuchen.
             Ansonsten bleibt nur der Tourist für non-EU citizens.
          */
-        if (model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident)
+        if (model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident && model.Diploma)
             model.RecommendPlan = MembershipPlansOptions.Resident;
         else
             model.RecommendPlan = MembershipPlansOptions.Tourist;
@@ -96,6 +95,7 @@ class Model {
     public Employees:boolean = false;
     public Inventory:boolean = false;
     public LimitedLiability:boolean = false;
+    public Diploma:boolean = false;
 
     public AverageRevenue:AverageRevenueOptions = AverageRevenueOptions.low;
     public AverageExpenses:AverageExpensesOptions = AverageExpensesOptions.negligible;
@@ -168,6 +168,7 @@ class View {
     cb_employees:HTMLInputElement;
     cb_inventory:HTMLInputElement;
     cb_limitedLiability:HTMLInputElement;
+    cb_diploma:HTMLInputElement;
 
     sb_AverageRevenue:HTMLSelectElement;
     sb_AverageExpenses:HTMLSelectElement;
@@ -197,6 +198,9 @@ class View {
         this.cb_limitedLiability = document.getElementById("liability") as HTMLInputElement;
         this.cb_limitedLiability.onclick = () => this.OnChanged(this);
 
+        this.cb_diploma = document.getElementById("diploma") as HTMLInputElement;
+        this.cb_diploma.onclick = () => this.OnChanged(this);
+
         this.sb_AverageRevenue = document.getElementById("revenue-2") as HTMLSelectElement;
         this.sb_AverageRevenue.onchange = () => this.OnChanged(this);
 
@@ -218,6 +222,7 @@ class View {
         vm.Employees = this.cb_employees.checked;
         vm.Inventory = this.cb_inventory.checked;
         vm.LimitedLiability = this.cb_limitedLiability.checked;
+        vm.Diploma = this.cb_diploma.checked;
 
         vm.AverageRevenue = this.AverageRevenue;
         vm.AverageExpenses = this.AverageExpenses;
@@ -235,6 +240,7 @@ class View {
         this.cb_employees.checked = vm.Employees;
         this.cb_inventory.checked = vm.Inventory;
         this.cb_limitedLiability.checked = vm.LimitedLiability;
+        this.cb_diploma.checked = vm.Diploma;
 
         this.AverageRevenue = vm.AverageRevenue;
         this.AverageExpenses = vm.AverageExpenses;
@@ -293,4 +299,4 @@ class View {
 let _view = new View();
 _view.OnChanged = onInteraction;
 
-// _view.Update(new Model());
+// _view.Update(new Model()); // Bei allen Input-Elementen einen Initialwert setzen

@@ -23,8 +23,7 @@ function onInteraction(view) {
                 Self-Employment ist eigentlich der Plan, den NN allen empfehlen möchte. Damit bleibt
                 ein Solopreneur wirklich unabhängig und es entsteht kein bürokratischer Aufwand.
              */
-            if ( //TODO: diplom checken && ...
-            (model.AverageExpenses == AverageExpensesOptions.negligible || model.AverageExpenses == AverageExpensesOptions.medium)) {
+            if (model.Diploma && (model.AverageExpenses == AverageExpensesOptions.negligible || model.AverageExpenses == AverageExpensesOptions.medium)) {
                 model.RecommendPlan = MembershipPlansOptions.Resident;
             }
             else {
@@ -44,7 +43,7 @@ function onInteraction(view) {
             der kann das über den Resident Plan versuchen.
             Ansonsten bleibt nur der Tourist für non-EU citizens.
          */
-        if (model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident)
+        if (model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident && model.Diploma)
             model.RecommendPlan = MembershipPlansOptions.Resident;
         else
             model.RecommendPlan = MembershipPlansOptions.Tourist;
@@ -87,6 +86,7 @@ var Model = /** @class */ (function () {
         this.Employees = false;
         this.Inventory = false;
         this.LimitedLiability = false;
+        this.Diploma = false;
         this.AverageRevenue = AverageRevenueOptions.low;
         this.AverageExpenses = AverageExpensesOptions.negligible;
         this.RecommendPlan = MembershipPlansOptions.None;
@@ -158,6 +158,8 @@ var View = /** @class */ (function () {
         this.cb_inventory.onclick = function () { return _this.OnChanged(_this); };
         this.cb_limitedLiability = document.getElementById("liability");
         this.cb_limitedLiability.onclick = function () { return _this.OnChanged(_this); };
+        this.cb_diploma = document.getElementById("diploma");
+        this.cb_diploma.onclick = function () { return _this.OnChanged(_this); };
         this.sb_AverageRevenue = document.getElementById("revenue-2");
         this.sb_AverageRevenue.onchange = function () { return _this.OnChanged(_this); };
         this.sb_AverageExpenses = document.getElementById("expenses-2");
@@ -173,6 +175,7 @@ var View = /** @class */ (function () {
             vm.Employees = this.cb_employees.checked;
             vm.Inventory = this.cb_inventory.checked;
             vm.LimitedLiability = this.cb_limitedLiability.checked;
+            vm.Diploma = this.cb_diploma.checked;
             vm.AverageRevenue = this.AverageRevenue;
             vm.AverageExpenses = this.AverageExpenses;
             return vm;
@@ -188,6 +191,7 @@ var View = /** @class */ (function () {
         this.cb_employees.checked = vm.Employees;
         this.cb_inventory.checked = vm.Inventory;
         this.cb_limitedLiability.checked = vm.LimitedLiability;
+        this.cb_diploma.checked = vm.Diploma;
         this.AverageRevenue = vm.AverageRevenue;
         this.AverageExpenses = vm.AverageExpenses;
         this.plans.Update(vm.RecommendPlan);
@@ -242,4 +246,4 @@ var View = /** @class */ (function () {
 }());
 var _view = new View();
 _view.OnChanged = onInteraction;
-// _view.Update(new Model());
+// _view.Update(new Model()); // Bei allen Input-Elementen einen Initialwert setzen
