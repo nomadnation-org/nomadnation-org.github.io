@@ -63,7 +63,7 @@ class RecommendationEngine {
         return availablePlans;
     }
 
-    
+
     private static Recommend_plan(availablePlans: MembershipPlanAvailability): MembershipPlansOptions {
         if (availablePlans.ExpatFree) return MembershipPlansOptions.Expat_Free;
         if (availablePlans.Resident) return MembershipPlansOptions.Resident;
