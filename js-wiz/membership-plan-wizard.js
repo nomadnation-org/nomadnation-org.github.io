@@ -1,55 +1,62 @@
 function onInteraction(view) {
     var model = view.ViewModel;
-    model.RecommendPlan = MembershipPlansOptions.Tourist;
-    if ((model.EUCitizen && (model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident || model.BGResidency == BGResidencyOptions.UnsureIfBGResidencyWanted)) ||
-        model.BGResidency == BGResidencyOptions.IsBGResident) {
-        /*
-            Für EU citizens ist eine BG residency ein no-brainer. Alle Pläne sind möglich.
-            Und wer als non-EU citizen doch schon eine BG residency hat, der kann auch alle Pläne nutzen.
-         */
-        var llcRequired = model.Contractors || model.Employees || model.Inventory || model.LimitedLiability ||
-            model.AverageRevenue == AverageRevenueOptions.high;
-        var llcSuggested = model.AverageRevenue == AverageRevenueOptions.medium &&
-            model.AverageExpenses == AverageExpensesOptions.high;
-        if (llcRequired || llcSuggested) {
-            /*
-                Notwendig ist eine EOOD, wenn ein Business viel Umsatz macht oder Abhängigkeiten aufweist.
-                Oder eine EOOD ist naheliegend, wenn die Ausgaben hoch im Verhältnis zu den Einnahmen sind.
-             */
-            model.RecommendPlan = MembershipPlansOptions.Expat_LLC;
-        }
-        else {
-            /*
-                Self-Employment ist eigentlich der Plan, den NN allen empfehlen möchte. Damit bleibt
-                ein Solopreneur wirklich unabhängig und es entsteht kein bürokratischer Aufwand.
-             */
-            if (model.Diploma && (model.AverageExpenses == AverageExpensesOptions.negligible || model.AverageExpenses == AverageExpensesOptions.medium)) {
-                model.RecommendPlan = MembershipPlansOptions.Resident;
-            }
-            else {
-                if ((model.AverageRevenue == AverageRevenueOptions.low && model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident) ||
-                    model.BGResidency == BGResidencyOptions.UnsureIfBGResidencyWanted) {
-                    model.RecommendPlan = MembershipPlansOptions.Tourist;
-                }
-                else {
-                    model.RecommendPlan = MembershipPlansOptions.Expat_Free;
-                }
-            }
-        }
-    }
-    else {
-        /*
-            Wer als non-EU citizen ohne BG residency eine BG residency bekommen will,
-            der kann das über den Resident Plan versuchen.
-            Ansonsten bleibt nur der Tourist für non-EU citizens.
-         */
-        if (model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident && model.Diploma)
-            model.RecommendPlan = MembershipPlansOptions.Resident;
-        else
-            model.RecommendPlan = MembershipPlansOptions.Tourist;
-    }
+    model.RecommendPlan = RecommendationEngine.Recommend(model);
     view.Update(model);
 }
+/*
+================== Recommendation Engine ==================
+ */
+var MembershipPlanAvailability = /** @class */ (function () {
+    function MembershipPlanAvailability() {
+    }
+    return MembershipPlanAvailability;
+}());
+var RecommendationEngine = /** @class */ (function () {
+    function RecommendationEngine() {
+    }
+    RecommendationEngine.Recommend = function (model) {
+        var availablePlans = RecommendationEngine.Check_availability(model);
+        return RecommendationEngine.Recommend_plan(availablePlans);
+    };
+    RecommendationEngine.Check_availability = function (model) {
+        var availablePlans = new MembershipPlanAvailability();
+        availablePlans.Tourist = true; // Tourist geht immer
+        availablePlans.Resident = model.Diploma &&
+            model.EUCitizen == false && model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident;
+        var bgResidencyNoProblem = model.EUCitizen || model.BGResidency == BGResidencyOptions.IsBGResident;
+        var requiresLlc = model.Contractors ||
+            model.Employees ||
+            model.Inventory ||
+            model.LimitedLiability ||
+            model.AverageRevenue == AverageRevenueOptions.high;
+        var justScrapingBy = model.AverageRevenue == AverageRevenueOptions.low && model.AverageExpenses == AverageExpensesOptions.negligible;
+        var smallToMediumExpenses = model.AverageExpenses == AverageExpensesOptions.negligible ||
+            model.AverageExpenses == AverageExpensesOptions.medium;
+        var mediumRevenueWithHighExpenses = model.AverageRevenue == AverageRevenueOptions.medium &&
+            model.AverageExpenses == AverageExpensesOptions.high;
+        availablePlans.ExpatFree = bgResidencyNoProblem && model.BGResidency != BGResidencyOptions.UnsureIfBGResidencyWanted &&
+            model.Diploma &&
+            smallToMediumExpenses &&
+            justScrapingBy == false &&
+            requiresLlc == false;
+        availablePlans.ExpatLlc = bgResidencyNoProblem && model.BGResidency != BGResidencyOptions.UnsureIfBGResidencyWanted &&
+            (requiresLlc || mediumRevenueWithHighExpenses);
+        return availablePlans;
+    };
+    RecommendationEngine.Recommend_plan = function (availablePlans) {
+        if (availablePlans.ExpatFree)
+            return MembershipPlansOptions.Expat_Free;
+        if (availablePlans.Resident)
+            return MembershipPlansOptions.Resident;
+        if (availablePlans.ExpatLlc)
+            return MembershipPlansOptions.Expat_LLC;
+        return MembershipPlansOptions.Tourist;
+    };
+    return RecommendationEngine;
+}());
+/*
+================== Model ==================
+ */
 var MembershipPlansOptions;
 (function (MembershipPlansOptions) {
     MembershipPlansOptions[MembershipPlansOptions["None"] = 0] = "None";
@@ -93,6 +100,9 @@ var Model = /** @class */ (function () {
     }
     return Model;
 }());
+/*
+================== View ==================
+ */
 var ViewPlan = /** @class */ (function () {
     function ViewPlan(kind) {
         this.kind = kind;
@@ -244,6 +254,8 @@ var View = /** @class */ (function () {
     });
     return View;
 }());
+/*
+================== Construction ==================
+ */
 var _view = new View();
 _view.OnChanged = onInteraction;
-// _view.Update(new Model()); // Bei allen Input-Elementen einen Initialwert setzen
