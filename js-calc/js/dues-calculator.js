@@ -3,16 +3,20 @@ var SOCIAL_SEC_EMPLOYEE_PCT = 0.1378;
 var SOCIAL_SEC_EMPLOYER_PCT = 0.1892;
 var TAX_PCT = 0.1000;
 function onInteraction(view) {
+    //TODO: social sec deckel!
+    //TODO: währungsumrechnung für social sec deckel
+    //TODO: incometype wird nicht beachtet
     var model = view.Model;
     model.ExchangeRatio = EXCHANGE_RATIOS[model.Currency];
-    if (model.IncomeGiven == IncomeTypes.Total)
+    if (model.IncomeGivenType == IncomeTypes.Total)
         model.GrossIncome = model.IncomeGiven / (1 + SOCIAL_SEC_EMPLOYER_PCT);
-    else if (model.IncomeGiven == IncomeTypes.Net) {
+    else if (model.IncomeGivenType == IncomeTypes.Net) {
         var taxableIncome_1 = model.IncomeGiven / (1 - TAX_PCT);
         model.GrossIncome = taxableIncome_1 / (1 - SOCIAL_SEC_EMPLOYEE_PCT);
     }
     else
         model.GrossIncome = model.IncomeGiven;
+    console.log(model.NetIncome + " / " + model.TotalCostOfIncome + " / " + model.GrossIncome);
     var socialSecEmployee = model.GrossIncome * SOCIAL_SEC_EMPLOYEE_PCT;
     var socialSecEmployer = model.GrossIncome * SOCIAL_SEC_EMPLOYER_PCT;
     model.TotalSocialSec = socialSecEmployee + socialSecEmployer;
@@ -94,7 +98,7 @@ var View = /** @class */ (function () {
         this.tx_incomeGiven.value = model.IncomeGiven.toFixed(2);
         this.Currency = model.Currency;
         this.lb_exchangeRatio.innerText = "(1лв=" + model.ExchangeRatio.toFixed(5) + CURRENCY_SYMBOLS[model.Currency] + ")";
-        this.lb_netIncome.innerText = model.IncomeGiven.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
+        this.lb_netIncome.innerText = model.NetIncome.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
         this.lb_totalTaxes.innerText = model.TotalTaxes.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
         this.lb_totalSocialSec.innerText = model.TotalSocialSec.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
         this.lb_totalcostIncome.innerText = model.TotalCostOfIncome.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
