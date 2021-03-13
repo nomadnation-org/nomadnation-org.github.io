@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dues Calculator</title>
+</head>
+<body>
+<h1>Dues Calculator</h1>
+
+<select id="incometype">
+    <option value="net">Net income</option>
+    <option value="gross">Gross income</option>
+    <option value="tcoe">Total cost of income</option>
+</select>
+
+<input type="number" value="0"/>
+
+<select id="currency">
+    <option value="EUR">€</option>
+    <option value="BGN">лв</option>
+    <option value="GBP">£</option>
+    <option value="USD">$</option>
+</select>
+
+<span id="exchangeratio">(BGN:?)</span>
+
+<br/>
+
+<table>
+    <tr>
+        <td>
+            Net income
+        </td>
+        <td>
+            <span id="netincome">0.00</span>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            Taxes
+        </td>
+        <td>
+            <span id="totaltaxes">0.00</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Social security
+        </td>
+        <td>
+            <span id="totalsocialsec">0.00</span>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            Total costs
+        </td>
+        <td>
+            <span id="tcoeincome">0.00</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            (Gross income
+        </td>
+        <td>
+            <span id="grossincome">0.00</span>)
+        </td>
+    </tr>
+</table>
+
+</body>
+<script src="js/dues-calculator.js"></script>
+</html>
