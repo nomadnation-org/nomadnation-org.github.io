@@ -1,10 +1,34 @@
 let EXCHANGE_RATIOS = [0.51125, 1.0, 0.43901, 0.61071] // In der Reihenfolge der Currencies, https://themoneyconverter.com/BGN/EUR
+let SOCIAL_SEC_EMPLOYEE_PCT = 0.1378;
+let SOCIAL_SEC_EMPLOYER_PCT = 0.1892;
+let TAX_PCT = 0.1000;
 
 function onInteraction(view:View) {
+    //TODO: social sec deckel!
+    //TODO: währungsumrechnung für social sec deckel
+    //TODO: incometype wird nicht beachtet
+
     let model = view.Model;
     model.ExchangeRatio = EXCHANGE_RATIOS[model.Currency];
 
-    model.IncomeGiven += 1;
+    if (model.IncomeGiven == IncomeTypes.Total)
+        model.GrossIncome = model.IncomeGiven / (1+SOCIAL_SEC_EMPLOYER_PCT);
+    else if (model.IncomeGiven == IncomeTypes.Net) {
+        let taxableIncome = model.IncomeGiven / (1-TAX_PCT);
+        model.GrossIncome = taxableIncome / (1-SOCIAL_SEC_EMPLOYEE_PCT);
+    }
+    else
+        model.GrossIncome = model.IncomeGiven;
+
+    let socialSecEmployee = model.GrossIncome * SOCIAL_SEC_EMPLOYEE_PCT;
+    let socialSecEmployer = model.GrossIncome * SOCIAL_SEC_EMPLOYER_PCT;
+    model.TotalSocialSec = socialSecEmployee + socialSecEmployer;
+    model.TotalCostOfIncome = model.GrossIncome + socialSecEmployer;
+
+    let taxableIncome = model.GrossIncome - socialSecEmployee;
+    model.TotalTaxes = taxableIncome * TAX_PCT;
+    model.NetIncome = taxableIncome - model.TotalTaxes;
+
     view.Update(model);
 }
 

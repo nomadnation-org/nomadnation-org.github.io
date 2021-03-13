@@ -1,8 +1,25 @@
 var EXCHANGE_RATIOS = [0.51125, 1.0, 0.43901, 0.61071]; // In der Reihenfolge der Currencies, https://themoneyconverter.com/BGN/EUR
+var SOCIAL_SEC_EMPLOYEE_PCT = 0.1378;
+var SOCIAL_SEC_EMPLOYER_PCT = 0.1892;
+var TAX_PCT = 0.1000;
 function onInteraction(view) {
     var model = view.Model;
     model.ExchangeRatio = EXCHANGE_RATIOS[model.Currency];
-    model.IncomeGiven += 1;
+    if (model.IncomeGiven == IncomeTypes.Total)
+        model.GrossIncome = model.IncomeGiven / (1 + SOCIAL_SEC_EMPLOYER_PCT);
+    else if (model.IncomeGiven == IncomeTypes.Net) {
+        var taxableIncome_1 = model.IncomeGiven / (1 - TAX_PCT);
+        model.GrossIncome = taxableIncome_1 / (1 - SOCIAL_SEC_EMPLOYEE_PCT);
+    }
+    else
+        model.GrossIncome = model.IncomeGiven;
+    var socialSecEmployee = model.GrossIncome * SOCIAL_SEC_EMPLOYEE_PCT;
+    var socialSecEmployer = model.GrossIncome * SOCIAL_SEC_EMPLOYER_PCT;
+    model.TotalSocialSec = socialSecEmployee + socialSecEmployer;
+    model.TotalCostOfIncome = model.GrossIncome + socialSecEmployer;
+    var taxableIncome = model.GrossIncome - socialSecEmployee;
+    model.TotalTaxes = taxableIncome * TAX_PCT;
+    model.NetIncome = taxableIncome - model.TotalTaxes;
     view.Update(model);
 }
 /*
