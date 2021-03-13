@@ -768,6 +768,11 @@ a {
   border-radius: 0px;
 }
 
+.planpreview_head.planpreview_head-empty {
+  padding-top: 40px;
+  text-align: center;
+}
+
 .planpreview_section {
   padding: 10px 15px 10px 0px;
   border-bottom: 1px none rgba(0, 0, 0, 0.1);
@@ -887,6 +892,11 @@ a {
   margin-top: 100px;
   padding-top: 20px;
   padding-bottom: 0px;
+}
+
+.h2-faded {
+  color: #f8fcfc;
+  font-size: 28px;
 }
 
 @media screen and (max-width: 767px) {
