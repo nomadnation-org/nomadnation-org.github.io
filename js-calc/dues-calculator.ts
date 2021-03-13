@@ -2,35 +2,60 @@ let EXCHANGE_RATIOS = [0.51125, 1.0, 0.43901, 0.61071] // In der Reihenfolge der
 let SOCIAL_SEC_EMPLOYEE_PCT = 0.1378;
 let SOCIAL_SEC_EMPLOYER_PCT = 0.1892;
 let TAX_PCT = 0.1000;
+let MAX_SOCIAL_SEC_INCOME_BGN = 3000.00;
 
 function onInteraction(view:View) {
-    //TODO: social sec deckel!
-    //TODO: währungsumrechnung für social sec deckel
     let model = view.Model;
 
     model.ExchangeRatio = EXCHANGE_RATIOS[model.Currency];
 
-    if (model.IncomeGivenType == IncomeTypes.Total)
-        model.GrossIncome = model.IncomeGiven / (1+SOCIAL_SEC_EMPLOYER_PCT);
+    let socialSecurityShares:SocialSecurityShares;
+
+    if (model.IncomeGivenType == IncomeTypes.Total) {
+        model.GrossIncome = model.IncomeGiven / (1 + SOCIAL_SEC_EMPLOYER_PCT);
+        socialSecurityShares = CalculateSocialSecurity(model.GrossIncome, model.ExchangeRatio);
+        model.GrossIncome = model.IncomeGiven - socialSecurityShares.Employer;
+    }
     else if (model.IncomeGivenType == IncomeTypes.Net) {
         let taxableIncome = model.IncomeGiven / (1-TAX_PCT);
         model.GrossIncome = taxableIncome / (1-SOCIAL_SEC_EMPLOYEE_PCT);
+        socialSecurityShares = CalculateSocialSecurity(model.GrossIncome, model.ExchangeRatio);
+        model.GrossIncome = taxableIncome + socialSecurityShares.Employee;
     }
-    else
+    else {
         model.GrossIncome = model.IncomeGiven;
+        socialSecurityShares = CalculateSocialSecurity(model.GrossIncome, model.ExchangeRatio);
+    }
 
-    console.log(model.NetIncome + " / " + model.TotalCostOfIncome + " / " + model.GrossIncome);
+    model.TotalSocialSec = socialSecurityShares.Total;
+    model.TotalCostOfIncome = model.GrossIncome + socialSecurityShares.Employer;
 
-    let socialSecEmployee = model.GrossIncome * SOCIAL_SEC_EMPLOYEE_PCT;
-    let socialSecEmployer = model.GrossIncome * SOCIAL_SEC_EMPLOYER_PCT;
-    model.TotalSocialSec = socialSecEmployee + socialSecEmployer;
-    model.TotalCostOfIncome = model.GrossIncome + socialSecEmployer;
-
-    let taxableIncome = model.GrossIncome - socialSecEmployee;
+    let taxableIncome = model.GrossIncome - socialSecurityShares.Employee;
     model.TotalTaxes = taxableIncome * TAX_PCT;
     model.NetIncome = taxableIncome - model.TotalTaxes;
 
     view.Update(model);
+}
+
+class SocialSecurityShares {
+    public Employee:number;
+    public Employer:number;
+
+    public get Total() {
+        return this.Employee + this.Employer;
+    }
+}
+
+function CalculateSocialSecurity(grossIncome:number, exchangeRatio:number):SocialSecurityShares {
+    let socialSecIncome = grossIncome;
+    let grossIncomeBGN = grossIncome / exchangeRatio;
+    if (grossIncomeBGN > MAX_SOCIAL_SEC_INCOME_BGN)
+        socialSecIncome = MAX_SOCIAL_SEC_INCOME_BGN * exchangeRatio;
+
+    let socialSec = new SocialSecurityShares();
+    socialSec.Employee = socialSecIncome * SOCIAL_SEC_EMPLOYEE_PCT;
+    socialSec.Employer = socialSecIncome * SOCIAL_SEC_EMPLOYER_PCT;
+    return socialSec;
 }
 
 
