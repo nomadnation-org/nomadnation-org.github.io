@@ -20,26 +20,36 @@ var RecommendationEngine = /** @class */ (function () {
     };
     RecommendationEngine.Check_availability = function (model) {
         var availablePlans = new MembershipPlanAvailability();
-        availablePlans.Tourist = true; // Tourist geht immer
-        availablePlans.Resident = model.Diploma &&
-            model.EUCitizen == false && model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident;
-        var bgResidencyNoProblem = model.EUCitizen || model.BGResidency == BGResidencyOptions.IsBGResident;
+        // Tourist geht immer
+        availablePlans.Tourist = true;
+        // Resident ist der Plan der Wahl, wenn jmd nicht EU citizen ist, aber
+        // einen Wohnsitz in BG bekommen will.
+        availablePlans.Resident = model.EUCitizen == false &&
+            model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident;
+        // Wann ist ein Expat-Plan eine gute Sache?
+        // Erstmal ein paar grundlegende Einschätzungen...
+        // Voraussetzung ist, dass ein BG Wohnsitz kein Problem ist:
+        var bgResidencyNoProblemAndWanted = (model.EUCitizen || model.BGResidency == BGResidencyOptions.IsBGResident) &&
+            model.BGResidency != BGResidencyOptions.UnsureIfBGResidencyWanted;
+        // Eine Llc ist in manchen Fällen zwingend angesagt:
         var requiresLlc = model.Contractors ||
             model.Employees ||
             model.Inventory ||
             model.LimitedLiability ||
             model.AverageRevenue == AverageRevenueOptions.high;
+        // Ein Expat ist keine gute Idee, wenn der Kandidat nur grad so über die Runden kommt.
         var justScrapingBy = model.AverageRevenue == AverageRevenueOptions.low && model.AverageExpenses == AverageExpensesOptions.negligible;
+        // Auch ein Kriterium ist, wie es mit den Ausgaben (im Verhältnis zum Umsatz) aussieht.
         var smallToMediumExpenses = model.AverageExpenses == AverageExpensesOptions.negligible ||
             model.AverageExpenses == AverageExpensesOptions.medium;
         var mediumRevenueWithHighExpenses = model.AverageRevenue == AverageRevenueOptions.medium &&
             model.AverageExpenses == AverageExpensesOptions.high;
-        availablePlans.ExpatFree = bgResidencyNoProblem && model.BGResidency != BGResidencyOptions.UnsureIfBGResidencyWanted &&
-            model.Diploma &&
+        // Und jetzt konkret:
+        availablePlans.ExpatFree = bgResidencyNoProblemAndWanted &&
             smallToMediumExpenses &&
             justScrapingBy == false &&
             requiresLlc == false;
-        availablePlans.ExpatLlc = bgResidencyNoProblem && model.BGResidency != BGResidencyOptions.UnsureIfBGResidencyWanted &&
+        availablePlans.ExpatLlc = bgResidencyNoProblemAndWanted &&
             (requiresLlc || mediumRevenueWithHighExpenses);
         return availablePlans;
     };
@@ -93,7 +103,6 @@ var Model = /** @class */ (function () {
         this.Employees = false;
         this.Inventory = false;
         this.LimitedLiability = false;
-        this.Diploma = false;
         this.AverageRevenue = AverageRevenueOptions.low;
         this.AverageExpenses = AverageExpensesOptions.negligible;
         this.RecommendPlan = MembershipPlansOptions.None;
@@ -168,8 +177,6 @@ var View = /** @class */ (function () {
         this.cb_inventory.onclick = function () { return _this.OnChanged(_this); };
         this.cb_limitedLiability = document.getElementById("liability");
         this.cb_limitedLiability.onclick = function () { return _this.OnChanged(_this); };
-        this.cb_diploma = document.getElementById("diploma");
-        this.cb_diploma.onclick = function () { return _this.OnChanged(_this); };
         this.sb_AverageRevenue = document.getElementById("revenue-2");
         this.sb_AverageRevenue.onchange = function () { return _this.OnChanged(_this); };
         this.sb_AverageExpenses = document.getElementById("expenses-2");
@@ -185,7 +192,6 @@ var View = /** @class */ (function () {
             vm.Employees = this.cb_employees.checked;
             vm.Inventory = this.cb_inventory.checked;
             vm.LimitedLiability = this.cb_limitedLiability.checked;
-            vm.Diploma = this.cb_diploma.checked;
             vm.AverageRevenue = this.AverageRevenue;
             vm.AverageExpenses = this.AverageExpenses;
             return vm;
@@ -201,7 +207,6 @@ var View = /** @class */ (function () {
         this.cb_employees.checked = vm.Employees;
         this.cb_inventory.checked = vm.Inventory;
         this.cb_limitedLiability.checked = vm.LimitedLiability;
-        this.cb_diploma.checked = vm.Diploma;
         this.AverageRevenue = vm.AverageRevenue;
         this.AverageExpenses = vm.AverageExpenses;
         this.plans.Update(vm.RecommendPlan);

@@ -28,22 +28,33 @@ class RecommendationEngine {
     private static Check_availability(model: Model): MembershipPlanAvailability {
         let availablePlans = new MembershipPlanAvailability();
 
-        availablePlans.Tourist = true; // Tourist geht immer
+        // Tourist geht immer
+        availablePlans.Tourist = true;
+
+        // Resident ist der Plan der Wahl, wenn jmd nicht EU citizen ist, aber
+        // einen Wohnsitz in BG bekommen will.
+        availablePlans.Resident = model.EUCitizen == false &&
+            model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident;
 
 
-        availablePlans.Resident = model.Diploma &&
-            model.EUCitizen == false && model.BGResidency == BGResidencyOptions.WantsToBecomeBGResident;
+        // Wann ist ein Expat-Plan eine gute Sache?
+        // Erstmal ein paar grundlegende Einschätzungen...
 
+        // Voraussetzung ist, dass ein BG Wohnsitz kein Problem ist:
+        let bgResidencyNoProblemAndWanted = (model.EUCitizen || model.BGResidency == BGResidencyOptions.IsBGResident) &&
+            model.BGResidency != BGResidencyOptions.UnsureIfBGResidencyWanted;
 
-        let bgResidencyNoProblem = model.EUCitizen || model.BGResidency == BGResidencyOptions.IsBGResident;
+        // Eine Llc ist in manchen Fällen zwingend angesagt:
         let requiresLlc = model.Contractors ||
             model.Employees ||
             model.Inventory ||
             model.LimitedLiability ||
             model.AverageRevenue == AverageRevenueOptions.high;
 
+        // Ein Expat ist keine gute Idee, wenn der Kandidat nur grad so über die Runden kommt.
         let justScrapingBy = model.AverageRevenue == AverageRevenueOptions.low && model.AverageExpenses == AverageExpensesOptions.negligible;
 
+        // Auch ein Kriterium ist, wie es mit den Ausgaben (im Verhältnis zum Umsatz) aussieht.
         let smallToMediumExpenses = model.AverageExpenses == AverageExpensesOptions.negligible ||
             model.AverageExpenses == AverageExpensesOptions.medium;
 
@@ -51,13 +62,13 @@ class RecommendationEngine {
             model.AverageExpenses == AverageExpensesOptions.high;
 
 
-        availablePlans.ExpatFree = bgResidencyNoProblem && model.BGResidency != BGResidencyOptions.UnsureIfBGResidencyWanted &&
-            model.Diploma &&
+        // Und jetzt konkret:
+        availablePlans.ExpatFree = bgResidencyNoProblemAndWanted &&
             smallToMediumExpenses &&
             justScrapingBy == false &&
             requiresLlc == false;
 
-        availablePlans.ExpatLlc = bgResidencyNoProblem && model.BGResidency != BGResidencyOptions.UnsureIfBGResidencyWanted &&
+        availablePlans.ExpatLlc = bgResidencyNoProblemAndWanted &&
             (requiresLlc || mediumRevenueWithHighExpenses);
 
         return availablePlans;
@@ -115,7 +126,6 @@ class Model {
     public Employees:boolean = false;
     public Inventory:boolean = false;
     public LimitedLiability:boolean = false;
-    public Diploma:boolean = false;
 
     public AverageRevenue:AverageRevenueOptions = AverageRevenueOptions.low;
     public AverageExpenses:AverageExpensesOptions = AverageExpensesOptions.negligible;
@@ -191,7 +201,6 @@ class View {
     cb_employees:HTMLInputElement;
     cb_inventory:HTMLInputElement;
     cb_limitedLiability:HTMLInputElement;
-    cb_diploma:HTMLInputElement;
 
     sb_AverageRevenue:HTMLSelectElement;
     sb_AverageExpenses:HTMLSelectElement;
@@ -221,9 +230,6 @@ class View {
         this.cb_limitedLiability = document.getElementById("liability") as HTMLInputElement;
         this.cb_limitedLiability.onclick = () => this.OnChanged(this);
 
-        this.cb_diploma = document.getElementById("diploma") as HTMLInputElement;
-        this.cb_diploma.onclick = () => this.OnChanged(this);
-
         this.sb_AverageRevenue = document.getElementById("revenue-2") as HTMLSelectElement;
         this.sb_AverageRevenue.onchange = () => this.OnChanged(this);
 
@@ -245,7 +251,6 @@ class View {
         vm.Employees = this.cb_employees.checked;
         vm.Inventory = this.cb_inventory.checked;
         vm.LimitedLiability = this.cb_limitedLiability.checked;
-        vm.Diploma = this.cb_diploma.checked;
 
         vm.AverageRevenue = this.AverageRevenue;
         vm.AverageExpenses = this.AverageExpenses;
@@ -263,7 +268,6 @@ class View {
         this.cb_employees.checked = vm.Employees;
         this.cb_inventory.checked = vm.Inventory;
         this.cb_limitedLiability.checked = vm.LimitedLiability;
-        this.cb_diploma.checked = vm.Diploma;
 
         this.AverageRevenue = vm.AverageRevenue;
         this.AverageExpenses = vm.AverageExpenses;
