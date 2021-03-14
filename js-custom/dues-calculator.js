@@ -1,3 +1,4 @@
+//TODO: Wechselkurse dynamisch laden (einmalig)
 var EXCHANGE_RATIOS = [0.51125, 1.0, 0.43901, 0.61071]; // In der Reihenfolge der Currencies, https://themoneyconverter.com/BGN/EUR
 var SOCIAL_SEC_EMPLOYEE_PCT = 0.1378;
 var SOCIAL_SEC_EMPLOYER_PCT = 0.1892;
