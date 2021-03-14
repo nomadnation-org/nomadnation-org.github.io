@@ -171,7 +171,7 @@ a {
 }
 
 .navbar {
-  margin-bottom: 60px;
+  margin-bottom: 20px;
   padding-top: 20px;
   padding-bottom: 30px;
   background-color: transparent;
@@ -207,8 +207,9 @@ a {
 }
 
 .section-hero {
+  margin-bottom: -50px;
   padding-top: 0px;
-  padding-bottom: 140px;
+  padding-bottom: 130px;
   background-image: url('../images/bg-top.svg');
   background-position: 50% 100%;
   background-size: cover;
@@ -231,6 +232,10 @@ a {
   font-family: futura-pt, sans-serif;
   font-size: 18px;
   font-weight: 600;
+}
+
+.button.button-menu {
+  margin-top: 20px;
 }
 
 .heading {
@@ -331,12 +336,12 @@ a {
 }
 
 .plan_section.plan_section-200 {
-  min-height: 200px;
+  min-height: 265px;
   padding-bottom: 10px;
 }
 
-.plan_section.plan_section-160 {
-  min-height: 160px;
+.plan_section.plan_section-130 {
+  min-height: 130px;
 }
 
 .plan_type {
@@ -429,8 +434,8 @@ a {
   max-width: 90%;
 }
 
-.column.column-padded {
-  padding-right: 10px;
+.column.column-paddedright {
+  padding-right: 30px;
   padding-bottom: 10px;
 }
 
@@ -441,6 +446,7 @@ a {
 }
 
 .label {
+  display: inline-block;
   font-weight: 400;
 }
 
@@ -460,7 +466,7 @@ a {
 
 .section-home {
   padding-top: 100px;
-  padding-bottom: 220px;
+  padding-bottom: 160px;
   background-image: url('../images/bg-top.svg');
   background-position: 50% 100%;
   background-size: cover;
@@ -618,6 +624,9 @@ a {
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
+  margin-bottom: 40px;
+  padding-right: 60px;
+  padding-left: 60px;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   -webkit-flex-direction: column;
@@ -627,6 +636,7 @@ a {
   -webkit-align-items: center;
   -ms-flex-align: center;
   align-items: center;
+  text-align: center;
 }
 
 .faq_body {
@@ -769,7 +779,8 @@ a {
 }
 
 .planpreview_head.planpreview_head-empty {
-  padding-top: 40px;
+  margin-bottom: -20px;
+  padding-top: 1px;
   text-align: center;
 }
 
@@ -814,6 +825,7 @@ a {
 .wizardimage {
   margin-top: 60px;
   margin-bottom: -200px;
+  text-align: center;
 }
 
 .wizardimage.image-center {
@@ -854,6 +866,10 @@ a {
   font-size: 28px;
 }
 
+.h2-large.alpha-10 {
+  color: rgba(68, 68, 68, 0.2);
+}
+
 .radio {
   width: 20px;
   height: 20px;
@@ -889,7 +905,7 @@ a {
 }
 
 .section-plancompare {
-  margin-top: 100px;
+  margin-top: 60px;
   padding-top: 20px;
   padding-bottom: 0px;
 }
@@ -897,6 +913,69 @@ a {
 .h2-faded {
   color: #f8fcfc;
   font-size: 28px;
+}
+
+.alpha-10 {
+  color: rgba(68, 68, 68, 0.2);
+}
+
+.divlabel {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  margin-bottom: 5px;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+
+.help {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  margin-left: 5px;
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 auto;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+  opacity: 1;
+}
+
+.help_content {
+  position: absolute;
+  left: 30px;
+  top: -80px;
+  z-index: 1000;
+  display: none;
+  width: 280px;
+  padding: 15px 15px 15px 20px;
+  background-color: #fff;
+  box-shadow: 1px 1px 30px 0 rgba(0, 0, 0, 0.15);
+}
+
+.help_content.show {
+  display: block;
+}
+
+.checkboxfield {
+  margin-bottom: 15px;
+}
+
+.checkboxwithhelp {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: start;
+  -webkit-align-items: flex-start;
+  -ms-flex-align: start;
+  align-items: flex-start;
 }
 
 @media screen and (max-width: 767px) {
