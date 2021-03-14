@@ -7,6 +7,14 @@ let helpbuttons = document.getElementsByClassName("help");
 for(var i=0; i<helpbuttons.length; i++) {
     let helpButton = helpbuttons[i] as HTMLElement;
     helpButton.onmousedown = (ev) => {
+        // Zuerst alle Tooltips schließen.
+        for(var i=0; i<helpbuttons.length; i++) {
+            let helpButton = helpbuttons[i] as HTMLElement;
+            let tooltip = helpButton.getElementsByClassName("help_content")[0] as HTMLElement;
+            tooltip.className = "help_content";
+        }
+
+        // Dann den gewünschten öffnen.
         let helpImage = ev.target as HTMLElement;
         let helpButton = helpImage.parentElement;
         let tooltip = helpButton.getElementsByClassName("help_content")[0] as HTMLElement;
