@@ -1113,6 +1113,10 @@ a {
     margin-top: 40px;
   }
 
+  .column.column-paddedright {
+    padding-right: 0px;
+  }
+
   .link.link-large {
     font-size: 18px;
   }
@@ -1150,6 +1154,15 @@ a {
     transition-property: none;
   }
 
+  .help_content.show {
+    left: auto;
+    right: 10px;
+    -webkit-box-align: end;
+    -webkit-align-items: flex-end;
+    -ms-flex-align: end;
+    align-items: flex-end;
+  }
+
   .help_content.show.help_content-right {
     left: auto;
     right: 10px;
@@ -1163,6 +1176,11 @@ a {
     left: auto;
     top: 13px;
     right: -30px;
+  }
+
+  .help_close {
+    margin-right: -30px;
+    margin-left: auto;
   }
 
   .help_close.help_close-right {
