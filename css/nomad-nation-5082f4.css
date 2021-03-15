@@ -295,8 +295,12 @@ a {
 }
 
 .usecase-left {
-  width: 350px;
+  width: 70px;
   padding-top: 20px;
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 auto;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
 }
 
 .section-plans {
@@ -518,6 +522,10 @@ a {
   background-image: url('../images/country-thailand.svg');
 }
 
+.embassy.embassy-thailand.mt-50 {
+  margin-top: 35px;
+}
+
 .embassy_country {
   font-family: futura-pt, sans-serif;
   font-size: 48px;
@@ -592,6 +600,7 @@ a {
 }
 
 .country {
+  display: none;
   margin-top: 10px;
   padding-top: 20px;
 }
@@ -601,7 +610,7 @@ a {
   box-shadow: 1px 1px 30px 0 rgba(0, 0, 0, 0.15);
 }
 
-.mb-60 {
+.mt-80 {
   margin-top: 80px;
 }
 
@@ -1065,7 +1074,39 @@ a {
   opacity: 1;
 }
 
+.mb-56 {
+  margin-bottom: 56px;
+}
+
+.social_icon-menu {
+  display: inline-block;
+  margin-top: 10px;
+  padding-top: 0px;
+}
+
+@media screen and (max-width: 991px) {
+  .plan_section.plan_section-large {
+    min-height: 362px;
+  }
+
+  .plan_section.plan_section-medium {
+    min-height: 190px;
+  }
+
+  .mb-56 {
+    margin-bottom: 25px;
+  }
+}
+
 @media screen and (max-width: 767px) {
+  .usecase-left {
+    width: 70px;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+  }
+
   .image.image-right.image-paddingtop {
     display: none;
     overflow: visible;
@@ -1088,21 +1129,168 @@ a {
     font-size: 18px;
   }
 
+  .section-wizard {
+    margin-bottom: -190px;
+    padding-bottom: 540px;
+  }
+
   .wizardimage.image-right.image-paddingtop {
     display: none;
     overflow: visible;
     margin-top: 40px;
   }
+
+  .help_content {
+    display: none;
+    box-shadow: none;
+    -webkit-transform: none;
+    -ms-transform: none;
+    transform: none;
+    -webkit-transition-property: none;
+    transition-property: none;
+  }
+
+  .help_content.show.help_content-right {
+    left: auto;
+    right: 10px;
+    -webkit-box-align: end;
+    -webkit-align-items: flex-end;
+    -ms-flex-align: end;
+    align-items: flex-end;
+  }
+
+  .help_content.help_content-right {
+    left: auto;
+    top: 13px;
+    right: -30px;
+  }
+
+  .help_close.help_close-right {
+    margin-right: -30px;
+    margin-left: auto;
+  }
+
+  .mb-56 {
+    margin-bottom: 0px;
+  }
 }
 
 @media screen and (max-width: 479px) {
+  .navbar {
+    padding-bottom: 0px;
+  }
+
+  .title-orange {
+    font-size: 32px;
+    line-height: 33px;
+  }
+
+  .section-hero {
+    padding-bottom: 20px;
+  }
+
+  .subtitle {
+    margin-bottom: 20px;
+  }
+
+  .section-chapter {
+    padding-top: 0px;
+    padding-bottom: 20px;
+  }
+
+  .usecase {
+    margin-right: 20px;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+  }
+
+  .usecase-right {
+    padding-left: 0px;
+  }
+
+  .usecase-left {
+    width: 53px;
+    margin-left: 0px;
+  }
+
   .plan {
     margin-top: 10px;
     margin-bottom: 10px;
   }
 
+  .plan_section.plan_section-large {
+    min-height: auto;
+  }
+
+  .column.column-paddedright {
+    padding-right: 0px;
+  }
+
+  .section-home {
+    padding-top: 40px;
+    padding-bottom: 80px;
+  }
+
+  .logo-large {
+    width: 270px;
+  }
+
+  .country {
+    padding-top: 10px;
+  }
+
+  .member {
+    padding-right: 0px;
+  }
+
+  .section-footer {
+    padding-top: 100px;
+  }
+
+  .logo-footer.w--current {
+    padding-left: 0px;
+  }
+
   .planpreview {
     margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .section-wizard {
+    margin-bottom: -150px;
+    padding-bottom: 560px;
+  }
+
+  .section-plancompare {
+    margin-top: auto;
+  }
+
+  .help_content.show {
+    left: auto;
+    right: -1px;
+    width: 90vw;
+    margin-right: 10px;
+    margin-left: 10px;
+    -webkit-box-align: end;
+    -webkit-align-items: flex-end;
+    -ms-flex-align: end;
+    align-items: flex-end;
+  }
+
+  .help_close {
+    margin-right: -28px;
+    margin-left: auto;
+  }
+
+  .icon {
+    margin-top: 14px;
+  }
+
+  .startimage {
+    margin-top: 30px;
     margin-bottom: 10px;
   }
 }
