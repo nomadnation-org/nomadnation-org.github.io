@@ -15,10 +15,10 @@ btnEncrypt.onclick = () => {
     let subject = (document.getElementById("subject") as HTMLInputElement).value;
     let package = (document.getElementById("package") as HTMLInputElement).value;
 
-    let payload = encodeURI(senderEmail + "\n" + subject + "\n" + package);
-    document.getElementById("payload").innerText = payload;
+    let payloadEncoded = encodeURI(senderEmail + "\n" + subject + "\n" + package);
+    document.getElementById("payload").innerText = payloadEncoded;
 
-    navigator.clipboard.writeText(payload)
+    navigator.clipboard.writeText(payloadEncoded)
         .then(() => {
         })
         .catch(err => {

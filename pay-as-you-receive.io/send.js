@@ -11,9 +11,9 @@ btnEncrypt.onclick = function () {
     var senderEmail = document.getElementById("senderemail").value;
     var subject = document.getElementById("subject").value;
     var package = document.getElementById("package").value;
-    var payload = encodeURI(senderEmail + "\n" + subject + "\n" + package);
-    document.getElementById("payload").innerText = payload;
-    navigator.clipboard.writeText(payload)
+    var payloadEncoded = encodeURI(senderEmail + "\n" + subject + "\n" + package);
+    document.getElementById("payload").innerText = payloadEncoded;
+    navigator.clipboard.writeText(payloadEncoded)
         .then(function () {
     })
         .catch(function (err) {
