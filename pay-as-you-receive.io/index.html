@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pay As You Receive</title>
+</head>
+<body>
+<div id="send">
+    <H1>Send</H1>
+
+    Your email: <input id="senderemail"/><br/>
+    Subject: <input id="subject"/><br/>
+    Content: <input id="package"/><br/>
+    <input id="encrypt" type="button" value="Wrap up!" /><br/>
+    <br/>
+    Payload: <span id="payload" style="background: #cccccc"></span>
+    <input id="gotoreceive" type="button" value="Receive payload..." /><br/>
+</div>
+<div id="receive">
+    <h1>Receive</h1>
+</div>
+</body>
+
+<script src="send.js"></script>
+</html>
