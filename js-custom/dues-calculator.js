@@ -8,26 +8,23 @@ function onInteraction(view) {
     var model = view.Model;
     model.ExchangeRatio = EXCHANGE_RATIOS[model.Currency];
     var socialSecurityShares;
-    if (model.IncomeGivenType == IncomeTypes.Total) {
-        model.GrossIncome = model.IncomeGiven / (1 + SOCIAL_SEC_EMPLOYER_PCT);
-        socialSecurityShares = CalculateSocialSecurity(model.GrossIncome, model.ExchangeRatio);
-        model.GrossIncome = model.IncomeGiven - socialSecurityShares.Employer;
+    var grossIncome;
+    if (model.IncomeType == IncomeTypes.Revenue) {
+        grossIncome = model.Income / (1 + SOCIAL_SEC_EMPLOYER_PCT);
+        socialSecurityShares = CalculateSocialSecurity(grossIncome, model.ExchangeRatio);
+        grossIncome = model.Income - socialSecurityShares.Employer;
     }
-    else if (model.IncomeGivenType == IncomeTypes.Net) {
-        var taxableIncome_1 = model.IncomeGiven / (1 - TAX_PCT);
-        model.GrossIncome = taxableIncome_1 / (1 - SOCIAL_SEC_EMPLOYEE_PCT);
-        socialSecurityShares = CalculateSocialSecurity(model.GrossIncome, model.ExchangeRatio);
-        model.GrossIncome = taxableIncome_1 + socialSecurityShares.Employee;
-    }
-    else {
-        model.GrossIncome = model.IncomeGiven;
-        socialSecurityShares = CalculateSocialSecurity(model.GrossIncome, model.ExchangeRatio);
+    else if (model.IncomeType == IncomeTypes.Payout) {
+        var taxableIncome_1 = model.Income / (1 - TAX_PCT);
+        grossIncome = taxableIncome_1 / (1 - SOCIAL_SEC_EMPLOYEE_PCT);
+        socialSecurityShares = CalculateSocialSecurity(grossIncome, model.ExchangeRatio);
+        grossIncome = taxableIncome_1 + socialSecurityShares.Employee;
     }
     model.TotalSocialSec = socialSecurityShares.Total;
-    model.TotalCostOfIncome = model.GrossIncome + socialSecurityShares.Employer;
-    var taxableIncome = model.GrossIncome - socialSecurityShares.Employee;
+    model.Revenue = grossIncome + socialSecurityShares.Employer;
+    var taxableIncome = grossIncome - socialSecurityShares.Employee;
     model.TotalTaxes = taxableIncome * TAX_PCT;
-    model.NetIncome = taxableIncome - model.TotalTaxes;
+    model.Payout = taxableIncome - model.TotalTaxes;
     view.Update(model);
 }
 var SocialSecurityShares = /** @class */ (function () {
@@ -57,9 +54,8 @@ function CalculateSocialSecurity(grossIncome, exchangeRatio) {
  */
 var IncomeTypes;
 (function (IncomeTypes) {
-    IncomeTypes[IncomeTypes["Net"] = 0] = "Net";
-    IncomeTypes[IncomeTypes["Gross"] = 1] = "Gross";
-    IncomeTypes[IncomeTypes["Total"] = 2] = "Total";
+    IncomeTypes[IncomeTypes["Payout"] = 0] = "Payout";
+    IncomeTypes[IncomeTypes["Revenue"] = 1] = "Revenue";
 })(IncomeTypes || (IncomeTypes = {}));
 var Currencies;
 (function (Currencies) {
@@ -70,12 +66,11 @@ var Currencies;
 })(Currencies || (Currencies = {}));
 var Model = /** @class */ (function () {
     function Model() {
-        this.IncomeGivenType = IncomeTypes.Net;
+        this.IncomeType = IncomeTypes.Revenue;
         this.Currency = Currencies.EUR;
         this.ExchangeRatio = EXCHANGE_RATIOS[Currencies.EUR];
-        this.NetIncome = 0.0;
-        this.TotalCostOfIncome = 0.0;
-        this.GrossIncome = 0.0;
+        this.Payout = 0.0;
+        this.Revenue = 0.0;
         this.TotalTaxes = 0.0;
         this.TotalSocialSec = 0.0;
     }
@@ -88,58 +83,69 @@ var CURRENCY_SYMBOLS = ["€", "лв", "£", "$"]; // Reihenfolge wie bei Curren
 var View = /** @class */ (function () {
     function View() {
         var _this = this;
-        this.INCOME_TYPE_OPTIONS = ["net", "gross", "tcoe"];
+        this.INCOME_TYPE_OPTIONS = ["payout", "revenue"];
         this.CURRENCY_OPTION = ["EUR", "BGN", "GBP", "USD"];
-        this.sb_incomeGivenType = document.getElementById("incometype");
-        this.sb_incomeGivenType.onchange = function () { return _this.OnChanged(_this); };
-        this.tx_incomeGiven = document.getElementById("income");
-        this.tx_incomeGiven.onchange = function () { return _this.OnChanged(_this); };
-        this.tx_incomeGiven.onkeypress = function (e) {
+        this.sb_incomeType = document.getElementById("incometype");
+        this.sb_incomeType.onchange = function () { return _this.OnChanged(_this); };
+        this.tx_income = document.getElementById("income");
+        // Bei jedem Tastendruck sofort die Kalkulation aktualisieren.
+        // Allerdings muss einen Moment gewartet werden, bis die Veränderung in .value
+        // angekommen ist.
+        this.tx_income.onkeyup = function (e) {
+            setTimeout(function () {
+                var x = parseFloat(_this.tx_income.value);
+                if (isNaN(x) == false)
+                    _this.OnChanged(_this);
+            }, 50);
+        };
+        // Auch wenn keine Veränderung vorgenommen wurde bei ENTER und Verlassen des Feldes
+        // neu kalkulieren. (Das könnte evtl. auch weg.)
+        this.tx_income.onchange = function () { return _this.OnChanged(_this); };
+        this.tx_income.onkeypress = function (e) {
             if (e.key == "\n")
                 _this.OnChanged(_this);
         };
         this.sb_currency = document.getElementById("currency");
         this.sb_currency.onchange = function () { return _this.OnChanged(_this); };
         this.lb_exchangeRatio = document.getElementById("exchangeratio");
-        this.lb_netIncome = document.getElementById("netincome");
+        this.lb_payout = document.getElementById("payout");
         this.lb_totalTaxes = document.getElementById("totaltaxes");
         this.lb_totalSocialSec = document.getElementById("totalsocialsec");
-        this.lb_totalcostIncome = document.getElementById("tcoeincome");
-        this.lb_grossIncome = document.getElementById("grossincome");
+        this.lb_revenue = document.getElementById("revenue");
+        this.tx_income.focus();
+        this.tx_income.select();
     }
     Object.defineProperty(View.prototype, "Model", {
         get: function () {
             var model = new Model();
-            model.IncomeGivenType = this.IncomeGivenType;
+            model.IncomeType = this.IncomeType;
             model.Currency = this.Currency;
-            var x = parseFloat(this.tx_incomeGiven.value);
-            model.IncomeGiven = isNaN(x) ? 0.0 : x;
+            var x = parseFloat(this.tx_income.value);
+            model.Income = isNaN(x) ? 0.0 : x;
             return model;
         },
         enumerable: false,
         configurable: true
     });
     View.prototype.Update = function (model) {
-        this.IncomeGivenType = model.IncomeGivenType;
-        this.tx_incomeGiven.value = model.IncomeGiven.toFixed(2);
+        this.IncomeType = model.IncomeType;
+        //this.tx_income.value = model.Income.toFixed(2);
         this.Currency = model.Currency;
         this.lb_exchangeRatio.innerText = "(1лв=" + model.ExchangeRatio.toFixed(5) + CURRENCY_SYMBOLS[model.Currency] + ")";
-        this.lb_netIncome.innerText = model.NetIncome.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
+        this.lb_payout.innerText = model.Payout.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
         this.lb_totalTaxes.innerText = model.TotalTaxes.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
         this.lb_totalSocialSec.innerText = model.TotalSocialSec.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
-        this.lb_totalcostIncome.innerText = model.TotalCostOfIncome.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
-        this.lb_grossIncome.innerText = model.GrossIncome.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
+        this.lb_revenue.innerText = model.Revenue.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
     };
-    Object.defineProperty(View.prototype, "IncomeGivenType", {
+    Object.defineProperty(View.prototype, "IncomeType", {
         get: function () {
-            switch (this.sb_incomeGivenType.value) {
-                case this.INCOME_TYPE_OPTIONS[IncomeTypes.Net]: return IncomeTypes.Net;
-                case this.INCOME_TYPE_OPTIONS[IncomeTypes.Gross]: return IncomeTypes.Gross;
-                case this.INCOME_TYPE_OPTIONS[IncomeTypes.Total]: return IncomeTypes.Total;
+            switch (this.sb_incomeType.value) {
+                case this.INCOME_TYPE_OPTIONS[IncomeTypes.Payout]: return IncomeTypes.Payout;
+                case this.INCOME_TYPE_OPTIONS[IncomeTypes.Revenue]: return IncomeTypes.Revenue;
             }
         },
         set: function (value) {
-            this.sb_incomeGivenType.value = this.INCOME_TYPE_OPTIONS[value];
+            this.sb_incomeType.value = this.INCOME_TYPE_OPTIONS[value];
         },
         enumerable: false,
         configurable: true

@@ -12,29 +12,26 @@ function onInteraction(view:View) {
     model.ExchangeRatio = EXCHANGE_RATIOS[model.Currency];
 
     let socialSecurityShares:SocialSecurityShares;
+    let grossIncome:number;
 
-    if (model.IncomeGivenType == IncomeTypes.Total) {
-        model.GrossIncome = model.IncomeGiven / (1 + SOCIAL_SEC_EMPLOYER_PCT);
-        socialSecurityShares = CalculateSocialSecurity(model.GrossIncome, model.ExchangeRatio);
-        model.GrossIncome = model.IncomeGiven - socialSecurityShares.Employer;
+    if (model.IncomeType == IncomeTypes.Revenue) {
+        grossIncome = model.Income / (1 + SOCIAL_SEC_EMPLOYER_PCT);
+        socialSecurityShares = CalculateSocialSecurity(grossIncome, model.ExchangeRatio);
+        grossIncome = model.Income - socialSecurityShares.Employer;
     }
-    else if (model.IncomeGivenType == IncomeTypes.Net) {
-        let taxableIncome = model.IncomeGiven / (1-TAX_PCT);
-        model.GrossIncome = taxableIncome / (1-SOCIAL_SEC_EMPLOYEE_PCT);
-        socialSecurityShares = CalculateSocialSecurity(model.GrossIncome, model.ExchangeRatio);
-        model.GrossIncome = taxableIncome + socialSecurityShares.Employee;
-    }
-    else {
-        model.GrossIncome = model.IncomeGiven;
-        socialSecurityShares = CalculateSocialSecurity(model.GrossIncome, model.ExchangeRatio);
+    else if (model.IncomeType == IncomeTypes.Payout) {
+        let taxableIncome = model.Income / (1-TAX_PCT);
+        grossIncome = taxableIncome / (1-SOCIAL_SEC_EMPLOYEE_PCT);
+        socialSecurityShares = CalculateSocialSecurity(grossIncome, model.ExchangeRatio);
+        grossIncome = taxableIncome + socialSecurityShares.Employee;
     }
 
     model.TotalSocialSec = socialSecurityShares.Total;
-    model.TotalCostOfIncome = model.GrossIncome + socialSecurityShares.Employer;
+    model.Revenue = grossIncome + socialSecurityShares.Employer;
 
-    let taxableIncome = model.GrossIncome - socialSecurityShares.Employee;
+    let taxableIncome = grossIncome - socialSecurityShares.Employee;
     model.TotalTaxes = taxableIncome * TAX_PCT;
-    model.NetIncome = taxableIncome - model.TotalTaxes;
+    model.Payout = taxableIncome - model.TotalTaxes;
 
     view.Update(model);
 }
@@ -67,9 +64,8 @@ function CalculateSocialSecurity(grossIncome:number, exchangeRatio:number):Socia
 
 
 enum IncomeTypes {
-    Net,
-    Gross,
-    Total
+    Payout,
+    Revenue
 }
 
 enum Currencies {
@@ -82,14 +78,13 @@ enum Currencies {
 
 
 class Model {
-    public IncomeGivenType:IncomeTypes = IncomeTypes.Net;
-    public IncomeGiven:number;
+    public IncomeType:IncomeTypes = IncomeTypes.Revenue;
+    public Income:number;
     public Currency:Currencies = Currencies.EUR;
     public ExchangeRatio:number = EXCHANGE_RATIOS[Currencies.EUR];
 
-    public NetIncome:number = 0.0;
-    public TotalCostOfIncome:number = 0.0;
-    public GrossIncome:number = 0.0;
+    public Payout:number = 0.0;
+    public Revenue:number = 0.0;
 
     public TotalTaxes:number = 0.0;
     public TotalSocialSec:number = 0.0;
@@ -104,77 +99,88 @@ class Model {
 let CURRENCY_SYMBOLS = ["€", "лв", "£", "$"]; // Reihenfolge wie bei Currencies
 
 class View {
-    sb_incomeGivenType:HTMLSelectElement;
-    tx_incomeGiven:HTMLInputElement;
+    sb_incomeType:HTMLSelectElement;
+    tx_income:HTMLInputElement;
     sb_currency:HTMLSelectElement;
     lb_exchangeRatio:HTMLElement;
 
-    lb_netIncome:HTMLElement;
+    lb_payout:HTMLElement;
     lb_totalTaxes:HTMLElement;
     lb_totalSocialSec:HTMLElement;
-    lb_totalcostIncome:HTMLElement;
-    lb_grossIncome:HTMLElement;
+    lb_revenue:HTMLElement;
 
 
     constructor() {
-        this.sb_incomeGivenType = document.getElementById("incometype") as HTMLSelectElement;
-        this.sb_incomeGivenType.onchange = () => this.OnChanged(this);
+        this.sb_incomeType = document.getElementById("incometype") as HTMLSelectElement;
+        this.sb_incomeType.onchange = () => this.OnChanged(this);
 
-        this.tx_incomeGiven = document.getElementById("income") as HTMLInputElement;
-        this.tx_incomeGiven.onchange = () => this.OnChanged(this);
-        this.tx_incomeGiven.onkeypress = (e:KeyboardEvent) => {
+        this.tx_income = document.getElementById("income") as HTMLInputElement;
+        // Bei jedem Tastendruck sofort die Kalkulation aktualisieren.
+        // Allerdings muss einen Moment gewartet werden, bis die Veränderung in .value
+        // angekommen ist.
+        this.tx_income.onkeyup = (e:KeyboardEvent) => {
+            setTimeout(() => {
+                var x = parseFloat(this.tx_income.value);
+                if (isNaN(x) == false) this.OnChanged(this);
+            }, 50)
+        };
+        // Auch wenn keine Veränderung vorgenommen wurde bei ENTER und Verlassen des Feldes
+        // neu kalkulieren. (Das könnte evtl. auch weg.)
+        this.tx_income.onchange = () => this.OnChanged(this);
+        this.tx_income.onkeypress = (e:KeyboardEvent) => {
             if (e.key == "\n") this.OnChanged(this);
         };
+
 
         this.sb_currency = document.getElementById("currency") as HTMLSelectElement;
         this.sb_currency.onchange = () => this.OnChanged(this);
 
         this.lb_exchangeRatio = document.getElementById("exchangeratio");
 
-        this.lb_netIncome = document.getElementById("netincome");
+        this.lb_payout = document.getElementById("payout");
         this.lb_totalTaxes = document.getElementById("totaltaxes");
         this.lb_totalSocialSec = document.getElementById("totalsocialsec");
-        this.lb_totalcostIncome = document.getElementById("tcoeincome");
-        this.lb_grossIncome = document.getElementById("grossincome");
+        this.lb_revenue = document.getElementById("revenue");
+
+        this.tx_income.focus();
+        this.tx_income.select();
     }
 
 
     public get Model(): Model {
         let model = new Model();
-        model.IncomeGivenType = this.IncomeGivenType;
+        model.IncomeType = this.IncomeType;
         model.Currency = this.Currency;
 
-        let x = parseFloat(this.tx_incomeGiven.value);
-        model.IncomeGiven = isNaN(x) ? 0.0 : x;
+        let x = parseFloat(this.tx_income.value);
+        model.Income = isNaN(x) ? 0.0 : x;
 
         return model;
     }
 
     public Update(model: Model) {
-        this.IncomeGivenType = model.IncomeGivenType;
-        this.tx_incomeGiven.value = model.IncomeGiven.toFixed(2);
+        this.IncomeType = model.IncomeType;
+        //this.tx_income.value = model.Income.toFixed(2);
         this.Currency = model.Currency;
         this.lb_exchangeRatio.innerText = "(1лв=" + model.ExchangeRatio.toFixed(5) + CURRENCY_SYMBOLS[model.Currency] + ")";
 
-        this.lb_netIncome.innerText = model.NetIncome.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
+        this.lb_payout.innerText = model.Payout.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
         this.lb_totalTaxes.innerText = model.TotalTaxes.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
         this.lb_totalSocialSec.innerText = model.TotalSocialSec.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
-        this.lb_totalcostIncome.innerText = model.TotalCostOfIncome.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
-        this.lb_grossIncome.innerText = model.GrossIncome.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
+        this.lb_revenue.innerText = model.Revenue.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
 
     }
 
 
-    INCOME_TYPE_OPTIONS = ["net","gross","tcoe"]
-    get IncomeGivenType(): IncomeTypes {
-        switch(this.sb_incomeGivenType.value){
-            case this.INCOME_TYPE_OPTIONS[IncomeTypes.Net]: return IncomeTypes.Net;
-            case this.INCOME_TYPE_OPTIONS[IncomeTypes.Gross]: return IncomeTypes.Gross;
-            case this.INCOME_TYPE_OPTIONS[IncomeTypes.Total]: return IncomeTypes.Total;
+    INCOME_TYPE_OPTIONS = ["payout","revenue"]
+    get IncomeType(): IncomeTypes {
+        switch(this.sb_incomeType.value){
+            case this.INCOME_TYPE_OPTIONS[IncomeTypes.Payout]: return IncomeTypes.Payout;
+            case this.INCOME_TYPE_OPTIONS[IncomeTypes.Revenue]: return IncomeTypes.Revenue;
         }
     }
-    set IncomeGivenType(value:IncomeTypes) {
-        this.sb_incomeGivenType.value = this.INCOME_TYPE_OPTIONS[value];
+    set IncomeType(value:IncomeTypes) {
+        this.sb_incomeType.value = this.INCOME_TYPE_OPTIONS[value];
     }
 
     CURRENCY_OPTION = ["EUR","BGN","GBP", "USD"]

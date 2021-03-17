@@ -8,9 +8,8 @@
 <h1>Dues Calculator</h1>
 
 <select id="incometype">
-    <option value="net">Net income</option>
-    <option value="gross">Gross income</option>
-    <option value="tcoe">Total cost of income</option>
+    <option value="revenue">Revenue</option>
+    <option value="payout">Payout</option>
 </select>
 
 <input id="income" type="number" value="0"/>
@@ -29,10 +28,10 @@
 <table>
     <tr>
         <td>
-            Net income
+            Payout
         </td>
         <td>
-            <span id="netincome">0.00</span>
+            <span id="payout">0.00</span>
         </td>
     </tr>
 
@@ -55,18 +54,10 @@
 
     <tr>
         <td>
-            Total costs
+            Revenue
         </td>
         <td>
-            <span id="tcoeincome">0.00</span>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            (Gross income
-        </td>
-        <td>
-            <span id="grossincome">0.00</span>)
+            <span id="revenue">0.00</span>
         </td>
     </tr>
 </table>
