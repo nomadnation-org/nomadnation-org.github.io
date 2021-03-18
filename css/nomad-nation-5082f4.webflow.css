@@ -1084,6 +1084,25 @@ a {
   padding-top: 0px;
 }
 
+.section-useful {
+  padding-top: 0px;
+  padding-bottom: 20px;
+}
+
+.section-howitworks {
+  padding-top: 0px;
+  padding-bottom: 20px;
+}
+
+.section-dues {
+  min-height: 820px;
+  padding-top: 180px;
+  padding-bottom: 20px;
+  background-image: url('../images/bg-center-right.svg');
+  background-position: 0px 0px;
+  background-size: cover;
+}
+
 @media screen and (max-width: 991px) {
   .plan_section.plan_section-large {
     min-height: 362px;
