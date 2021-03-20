@@ -1363,6 +1363,14 @@ a {
   border-color: #ff4e00;
 }
 
+.mt-x {
+  margin-top: 112px;
+}
+
+.mt-0 {
+  margin-top: 0px;
+}
+
 @media screen and (max-width: 991px) {
   .plan_section.plan_section-large {
     min-height: 362px;
