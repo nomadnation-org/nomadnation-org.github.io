@@ -1175,7 +1175,7 @@ a {
 }
 
 .section-story {
-  padding-top: 130px;
+  padding-top: 70px;
   padding-bottom: 70px;
 }
 
@@ -1185,7 +1185,6 @@ a {
 
 .story_title {
   margin-top: 0px;
-  margin-bottom: 40px;
   color: #009192;
   font-size: 38px;
   line-height: 42px;
@@ -1235,7 +1234,15 @@ a {
   display: -ms-flexbox;
   display: flex;
   margin-top: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   font-size: 16px;
+}
+
+.calculator_row.calculator_row-separator {
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px none #000;
 }
 
 .calculator_incometype {
@@ -1327,6 +1334,16 @@ a {
 
 .calculator_exchange {
   display: none;
+}
+
+.calculator_payout {
+  font-family: Inter, sans-serif;
+}
+
+.story_subtitle {
+  margin-bottom: 40px;
+  font-family: futura-pt, sans-serif;
+  font-size: 24px;
 }
 
 @media screen and (max-width: 991px) {

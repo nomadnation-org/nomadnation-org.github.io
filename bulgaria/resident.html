@@ -1,5 +1,5 @@
 <!DOCTYPE html><!--  This site was created in Webflow. http://www.webflow.com  -->
-<!--  Last Published: Sat Mar 20 2021 10:15:39 GMT+0000 (Coordinated Universal Time)  -->
+<!--  Last Published: Sat Mar 20 2021 10:29:54 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="6052f81e159765d8e12c4b9d" data-wf-site="60424e1d2270db32af71da2d">
 <head>
   <meta charset="utf-8">
@@ -17,7 +17,7 @@
   <link href="../css/webflow.css" rel="stylesheet" type="text/css">
   <link href="../css/nomad-nation-5082f4.webflow.css" rel="stylesheet" type="text/css">
   <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript"></script>
-  <script type="text/javascript">WebFont.load({  google: {    families: ["Inter:regular","Inter:regular,700"]  }});</script>
+  <script type="text/javascript">WebFont.load({  google: {    families: ["Inter:regular","Inter:regular,600"]  }});</script>
   <script src="https://use.typekit.net/ugu1shx.js" type="text/javascript"></script>
   <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
   <!-- [if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js" type="text/javascript"></script><![endif] -->
@@ -240,7 +240,7 @@
                     </select></div>
                   <div class="calculator_settingscol calculator_settingscol-center"><input type="number" class="w-input" maxlength="256" name="income" data-name="income" placeholder="0" id="income"></div>
                   <div class="calculator_settingscol">
-                    <div class="calculator_exchange"><span id="exchangeratio">(BGN:?)</span></div><select id="currency" name="currency" data-name="currency" class="select w-select">
+                    <div class="calculator_exchange"><span id="exchangeratio" class="calculator_exchange">(BGN:?)</span></div><select id="currency" name="currency" data-name="currency" class="select w-select">
                       <option value="EUR">€</option>
                       <option value="BGN">лв</option>
                       <option value="GBP">£</option>
@@ -250,10 +250,10 @@
                 </div>
                 <div class="calculator_row">
                   <div class="calculator_labelcol">
-                    <div><strong>Payout</strong></div>
+                    <div>Revenue</div>
                   </div>
                   <div class="calculator_resultcol">
-                    <div><span id="payout"><strong>0.00</strong></span></div>
+                    <div><span id="revenue">0.00</span></div>
                   </div>
                 </div>
                 <div class="calculator_row">
@@ -272,12 +272,12 @@
                     <div><span id="totalsocialsec">0.00</span></div>
                   </div>
                 </div>
-                <div class="calculator_row">
+                <div class="calculator_row calculator_row-separator">
                   <div class="calculator_labelcol">
-                    <div>Revenue</div>
+                    <div>Payout</div>
                   </div>
                   <div class="calculator_resultcol">
-                    <div><span id="revenue">0.00</span></div>
+                    <div><span id="payout" class="calculator_payout">0.00</span></div>
                   </div>
                 </div>
               </form>
@@ -289,54 +289,6 @@
               </div>
             </div>
           </div>
-          <div class="w-embed"><select id="incometype">
-              <option value="revenue">Revenue</option>
-              <option value="payout">Payout</option>
-            </select>
-            <input id="income" type="number" value="0">
-            <select id="currency">
-              <option value="EUR">€</option>
-              <option value="BGN">лв</option>
-              <option value="GBP">£</option>
-              <option value="USD">$</option>
-            </select>
-            <span id="exchangeratio">(BGN:?)</span>
-            <br>
-            <table>
-              <tr>
-                <td>
-                  Payout
-                </td>
-                <td>
-                  <span id="payout">0.00</span>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  Taxes
-                </td>
-                <td>
-                  <span id="totaltaxes">0.00</span>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  Social security
-                </td>
-                <td>
-                  <span id="totalsocialsec">0.00</span>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  Revenue
-                </td>
-                <td>
-                  <span id="revenue">0.00</span>
-                </td>
-              </tr>
-            </table>
-          </div>
         </div>
       </div>
     </div>
@@ -345,15 +297,15 @@
     <div class="w-container">
       <div class="w-row">
         <div class="w-col w-col-6">
-          <h2 class="title-orange mb-40">Stories</h2>
+          <h2 class="title-orange mb-40">Showcase</h2>
         </div>
         <div class="w-col w-col-6"></div>
       </div>
       <div class="w-row">
         <div class="col-center w-col w-col-6">
-          <h3 class="story_title">Ralf - Software Development Coach</h3>
+          <h3 class="story_title">Ralf</h3>
+          <div class="story_subtitle">Software Development Coach</div>
           <div class="story_image"><img src="../images/story-ralf.png" loading="lazy" alt="" class="story_img"></div>
-          <p></p>
         </div>
         <div class="w-col w-col-6">
           <p>When I first came to Bansko from Germany it was not easy to decide what the best option would be to set up my solopreneur business. With my girlfriend in the same situation as me I did a lot of research - and finally settled on my own EOOD. In Germany I had worked as a freelancer - but in Bulgaria a limited liability company seemed a better option.</p>
