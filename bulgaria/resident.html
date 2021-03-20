@@ -1,5 +1,5 @@
 <!DOCTYPE html><!--  This site was created in Webflow. http://www.webflow.com  -->
-<!--  Last Published: Sat Mar 20 2021 09:40:13 GMT+0000 (Coordinated Universal Time)  -->
+<!--  Last Published: Sat Mar 20 2021 10:15:39 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="6052f81e159765d8e12c4b9d" data-wf-site="60424e1d2270db32af71da2d">
 <head>
   <meta charset="utf-8">
@@ -239,19 +239,21 @@
                       <option value="payout">Payout</option>
                     </select></div>
                   <div class="calculator_settingscol calculator_settingscol-center"><input type="number" class="w-input" maxlength="256" name="income" data-name="income" placeholder="0" id="income"></div>
-                  <div class="calculator_settingscol"><select id="currency" name="currency" data-name="currency" class="select w-select">
+                  <div class="calculator_settingscol">
+                    <div class="calculator_exchange"><span id="exchangeratio">(BGN:?)</span></div><select id="currency" name="currency" data-name="currency" class="select w-select">
                       <option value="EUR">€</option>
                       <option value="BGN">лв</option>
                       <option value="GBP">£</option>
                       <option value="USD">$</option>
-                    </select></div>
+                    </select>
+                  </div>
                 </div>
                 <div class="calculator_row">
                   <div class="calculator_labelcol">
                     <div><strong>Payout</strong></div>
                   </div>
                   <div class="calculator_resultcol">
-                    <div id="payout"><strong>0.00</strong></div>
+                    <div><span id="payout"><strong>0.00</strong></span></div>
                   </div>
                 </div>
                 <div class="calculator_row">
@@ -259,7 +261,7 @@
                     <div>Taxes</div>
                   </div>
                   <div class="calculator_resultcol">
-                    <div id="payout">0.00</div>
+                    <div><span id="totaltaxes">0.00</span></div>
                   </div>
                 </div>
                 <div class="calculator_row">
@@ -267,7 +269,7 @@
                     <div>Social Security</div>
                   </div>
                   <div class="calculator_resultcol">
-                    <div id="payout">0.00</div>
+                    <div><span id="totalsocialsec">0.00</span></div>
                   </div>
                 </div>
                 <div class="calculator_row">
@@ -275,7 +277,7 @@
                     <div>Revenue</div>
                   </div>
                   <div class="calculator_resultcol">
-                    <div id="payout">0.00</div>
+                    <div><span id="revenue">0.00</span></div>
                   </div>
                 </div>
               </form>
