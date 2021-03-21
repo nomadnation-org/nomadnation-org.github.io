@@ -112,8 +112,6 @@ var View = /** @class */ (function () {
         this.lb_totalTaxes = document.getElementById("totaltaxes");
         this.lb_totalSocialSec = document.getElementById("totalsocialsec");
         this.lb_revenue = document.getElementById("revenue");
-        this.tx_income.focus();
-        this.tx_income.select();
     }
     Object.defineProperty(View.prototype, "Model", {
         get: function () {
