@@ -175,6 +175,10 @@ a:hover {
   text-decoration: none;
 }
 
+a.w--current {
+  color: #ff4e00;
+}
+
 .navbar {
   margin-bottom: 20px;
   padding-top: 20px;
@@ -1279,7 +1283,12 @@ a:hover {
   display: flex;
   margin-top: 10px;
   padding-top: 5px;
+  padding-right: 71px;
   padding-bottom: 5px;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
   font-size: 16px;
 }
 
@@ -1394,6 +1403,7 @@ a:hover {
   border-style: solid;
   border-width: 2px;
   border-color: rgba(0, 0, 0, 0.1);
+  text-align: left;
 }
 
 .calculator_input:focus {
@@ -1562,6 +1572,10 @@ a:hover {
     padding-left: 45px;
     background-position: 15px 20px;
     font-size: 18px;
+  }
+
+  .calculator_row {
+    padding-right: 10px;
   }
 }
 
@@ -1749,6 +1763,11 @@ a:hover {
 
   .section-footer {
     padding-top: 100px;
+    padding-bottom: 50px;
+  }
+
+  .logo-footer {
+    padding-left: 0px;
   }
 
   .logo-footer.w--current {
@@ -1831,6 +1850,16 @@ a:hover {
 
   .calculator_revenuecol {
     width: auto;
+  }
+
+  .footerlinkcol {
+    margin-top: 20px;
+    margin-bottom: 40px;
+    padding-left: 10px;
+  }
+
+  .taxcalcimage {
+    margin-bottom: 0px;
   }
 }
 
